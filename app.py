@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def hello():
-    return "Hello World!"
+def dashboard():
+    return render_template('dashboard.html')
 
 APP_SECRET = "763bc897c7ab402b870ad33a7cd59062"
 VALIDATION_TOKEN = "jarvis"
@@ -17,14 +17,12 @@ PAGE_ACCESS_TOKEN = "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdq
 def webhook():
     if request.method == 'POST':
         try:
-            print "post method"
             data = json.loads(request.data)
             for entry in data['entry']:
                 for message in entry['messaging']:
                     if 'optin' in message:
                         pass
                     elif 'message' in message:
-                        print "it's a message"
                         receivedMessage(message)
                     elif 'delivery' in message:
                         pass
@@ -46,14 +44,12 @@ def webhook():
             print request.args.get('hub.mode')
             print request.args.get('hub.verify_token')
             print request
-            print "_-_________"
             return "Wrong Verify Token", 403
 
 
 def receivedMessage(event):
     senderID = event['sender']['id']
     message = event['message']
-
     if 'text' in message:
         sendTextMessage(senderID, "Text received.")
     elif 'attachments' in message:
@@ -70,6 +66,7 @@ def sendTextMessage(recipientId, messageText):
 
 
 def callSendAPI(messageData):
+    print messageData
     r = requests.post(
         "https://graph.facebook.com/v2.6/me/messages/?access_token=" +
         PAGE_ACCESS_TOKEN,
