@@ -16,6 +16,7 @@ PAGE_ACCESS_TOKEN = "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdq
 @app.route("/webhook", methods=['GET', 'POST'])
 def webhook():
     if request.method == 'POST':
+        print "post called"
         try:
             print "post method"
             data = json.loads(request.data)
@@ -25,6 +26,7 @@ def webhook():
                         pass
                     elif 'message' in message:
                         print "it's a message"
+                        print "is message"
                         receivedMessage(message)
                     elif 'delivery' in message:
                         pass
@@ -38,6 +40,7 @@ def webhook():
         return "Yay", 200
 
     elif request.method == 'GET':
+        print "get called"
         if (request.args.get('hub.mode') == 'subscribe' and
         request.args.get('hub.verify_token') == VALIDATION_TOKEN):
             return request.args.get('hub.challenge'), 200
@@ -53,6 +56,9 @@ def webhook():
 def receivedMessage(event):
     senderID = event['sender']['id']
     message = event['message']
+
+    print senderID
+    print message
 
     if 'text' in message:
         sendTextMessage(senderID, "Text received.")
