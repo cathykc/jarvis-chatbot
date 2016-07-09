@@ -21,8 +21,8 @@ def get_top_locations(type, number, location):
     response = client.search(location, **params)
     for business in response.businesses:
         print "hello business"
-        name = business.name
-        locations[name] = business.location.display_address
+        # name = business.name
+        # locations[name] = business.location.display_address
         message = {}
         message["title"] = business.name
         message["subtitle"] = "Test subtitle"
