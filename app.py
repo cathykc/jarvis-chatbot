@@ -36,14 +36,46 @@ def dashboard(senderID=None):
     session['fbid'] = senderID
     return render_template('dashboard.html')
 
+@app.route("/lyft_deeplink")
+def lyft_deeplink():
+    # Determine what time of day it is
+    isMorning = True
+
+    # Get the user id
+
+    # Determine pickup and dropoff based on home, work, and isMorning flag
+    rideType = 'lyft_line'
+    # if isMorning:
+    #     # Retrieve work as destination
+    # else:
+    #     # Retrieve home as destination
+
+    # temp
+    dropoffLat = 37.75593
+    dropoffLong = -122.41091
+
+    return render_template('lyft_deeplink.html', rideType=rideType, dropoffLat=dropoffLat, dropoffLong=dropoffLong)
+    
+
 @app.route("/lyft_auth_redirect")
 def lyft_auth():
+    # auth lyft
     (access_token, refresh_token) = lyft.authorize(request)
 
-    fbid = session['fbid']
+    # Get signal
+    (go_home_time,
+            home_address,
+            home_lat,
+            home_long,
+            go_to_work_time,
+            work_address,
+            work_lat,
+            work_long) = lyft.analyze(access_token, refresh_token)
 
     # Store access_token and refresh_token in db
-    return "Got them for fbid: " + fbid 
+    fbid = session['fbid']
+
+    return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
 
 @app.route("/google_auth")
 def google_auth():
