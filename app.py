@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from api import google_cal
+# from api import google_cal, yelp_api
 import json
 import requests
 app = Flask(__name__)
@@ -88,6 +88,19 @@ def receivedMessage(event):
 
     if 'text' in message:
         sendTextMessage(senderID, "Text received.")
+        text = message["text"]
+
+        #Schedule coffee in Mission with Mom
+        if 'coffee' in text:
+            split = text.split()
+            location = split[3]
+            response = yelp_api.get_top_locations('coffee', 3, location)
+            to_user = ""
+            i = 1
+            for r in response:
+                to_user += i + " " + r + "\n"
+            sendTextMessage(senderID, to_user)
+
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
 
