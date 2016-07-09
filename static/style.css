@@ -79,5 +79,16 @@ body {
 	background-position: center;
 }
 
+.messenger-button {
+	text-align: center;
+}
 
+.welcome {
+	font-family: 'Oswald', sans-serif;
+	color: #AAA;
+	font-size: 50px;
+	text-align: center;
+	text-transform: uppercase;
+	margin: 30px;
+}
 
