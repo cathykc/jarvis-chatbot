@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import json
 import requests
 app = Flask(__name__)
@@ -58,7 +58,6 @@ def webhook():
 # CHATBOT MESSAGING AND POSTBACKS
 # *****************************************************************************
 
-
 def receivedMessage(event):
     senderID = event['sender']['id']
     message = event['message']
@@ -70,6 +69,8 @@ def receivedMessage(event):
         sendTextMessage(senderID, "Text received.")
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
+
+    
 
 
 def receivedPostback(event):
@@ -84,7 +85,7 @@ def receivedPostback(event):
 # Send a text mesage.
 def sendTextMessage(recipientId, messageText):
 
-    messageData = {'recipient': recipientId}
+    messageData = {'recipient': {'id': recipientId}}
     messageData['message'] = {'text': messageText}
 
     callSendAPI(messageData)
@@ -92,7 +93,7 @@ def sendTextMessage(recipientId, messageText):
 
 # Send an image message.
 def sendImageMessage(recipientId, imageUrl):
-    messageData = {'recipient': recipientId}
+    messageData = {'recipient': {'id': recipientId}}
 
     attachment = {'type': "image"}
     attachment['payload'] = {'url': imageUrl}
@@ -113,13 +114,13 @@ def sendImageMessage(recipientId, imageUrl):
 #     payload: "Developer defined postback"
 # }]
 def sendButtonMessage(recipientId, messageText, buttonList):
-    messageData = {'recipient': recipientId}
+    messageData = {"recipient": {"id": recipientId}}
 
-    attachment = {'type': "template"}
-    attachment['payload'] = {'template_type': button,
-                             'text': messageText,
-                             'buttons': buttonList}
-    messageData['message'] = {'attachment': attachment}
+    attachment = {"type": "template"}
+    attachment["payload"] = {"template_type":"button",
+                             "text":messageText,
+                             "buttons": buttonList}
+    messageData['message'] = {'attachment':attachment}
 
     callSendAPI(messageData)
 
@@ -156,7 +157,7 @@ def sendButtonMessage(recipientId, messageText, buttonList):
 #     }]
 # }]
 def sendCarouselMessage(recipientId, elementList):
-    messageData = {'recipient': recipientId}
+    messageData = {'recipient': {'id': recipientId}}
 
     attachment = {'type': "template"}
     attachment['payload'] = {'template_type': "generic",
@@ -173,6 +174,7 @@ def callSendAPI(messageData):
         PAGE_ACCESS_TOKEN,
         json=messageData
     )
+    print r.json()
     if r.status_code == 200:
         print "Successfully sent message."
     else:
