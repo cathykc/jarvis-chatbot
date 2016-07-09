@@ -1,12 +1,33 @@
 from flask import Flask, request, render_template
+from api import google_cal
 import json
 import requests
 app = Flask(__name__)
 
+# *****************************************************************************
+# WEBAPP ROUTES
+# *****************************************************************************
 
 @app.route("/")
-def dashboard():
+@app.route("/<senderID>")
+def dashboard(senderID=None):
+    if senderID == None:
+        return "Click in through Messenger"
     return render_template('dashboard.html')
+
+@app.route("/lyft_auth")
+def lyft_auth():
+    return "LYFT AUTH"
+
+@app.route("/google_auth")
+def google_auth():
+    google_cal.main()
+    return "GOOGLE AUTH"
+
+@app.route("/yelp_auth")
+def yelp_auth():
+    return "YELP AUTH"
+
 
 # *****************************************************************************
 # CHATBOT WEBHOOK
