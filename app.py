@@ -57,6 +57,18 @@ def google_oauth2callback():
 def yelp_auth():
     return "YELP AUTH"
 
+# simulates a text message event
+@app.route("/message_test/<senderID>/<message>")
+def message_test(senderID=None, message=""):
+    print "hi"
+    event = {}
+    event['sender'] = {}
+    event['message'] = {}
+    event['sender']['id'] = senderID
+    event['message']['text'] = message
+    receivedMessage(event)
+    return "Check your server logs"
+
 # *****************************************************************************
 # CHATBOT WEBHOOK
 # *****************************************************************************
@@ -173,7 +185,7 @@ def sendTextMessage(recipientId, messageText):
 
     messageData = {'recipient': {'id': recipientId}}
     messageData['message'] = {'text': messageText}
-    
+
     print messageText
     callSendAPI(messageData)
 
