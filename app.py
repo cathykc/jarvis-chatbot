@@ -123,6 +123,7 @@ def receivedMessage(event):
 
         # Schedule coffee in Mission with Mom
         elif 'coffee' in text:
+            print "enter method"
             split = text.split()
             location = split[3]
             print "before entering yelp file"
