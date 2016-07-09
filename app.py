@@ -1,29 +1,16 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, render_template, session, url_for
-from api import google_cal, yelp_api, lyft, nyt_api
+from flask import Flask, request, render_template, session
+from api import google_cal, yelp_api, lyft
+from database import db
+from models import User
+import app
 import json
 import requests
 import os
 import uuid
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db.init_app(app)
 app.secret_key = str(uuid.uuid4())
-
-# *****************************************************************************
-# DATABSASE AND MODELS
-# *****************************************************************************
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') if os.environ.get('DATABASE_URL') else "sqlite:////tmp/test.db" 
-db = SQLAlchemy(app)
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    facebook_id = db.Column(db.Integer, unique=True)
-
-    def __init__(self, facebook_id):
-        self.facebook_id = facebook_id
-
-    def __repr__(self):
-        return str(self.facebook_id)
 
 # *****************************************************************************
 # WEBAPP ROUTES
@@ -35,7 +22,16 @@ def dashboard(senderID=None):
     if senderID == None:
         return render_template('login.html')
     session['fbid'] = senderID
-    return render_template('dashboard.html')
+    user = User.query.get(senderID)
+    if not user:
+        user = User(facebook_id=senderID) 
+        db.session.add(user)
+        print user, "new user added"
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+    return render_template('dashboard.html', senderID=senderID)
 
 @app.route("/lyft_deeplink")
 def lyft_deeplink():
@@ -78,13 +74,18 @@ def lyft_auth():
 
     return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
 
-@app.route("/google_auth")
-def google_auth():
-    return google_cal.oauth()
+@app.route("/google_auth/<senderID>")
+def google_auth(senderID=None):
+    if senderID == None:
+        return "Click in through Messenger"
+    return google_cal.oauth(senderID)
 
-@app.route('/google_oauth2callback')
+@app.route("/google_oauth2callback")
 def google_oauth2callback():
-    return google_cal.oauth2callback()
+    facebook_id = session['facebook_id']
+    if facebook_id == None:
+        return "Click in through Messenger"
+    return google_cal.oauth2callback(facebook_id)
 
 @app.route("/fitbit_auth")
 def fitbit_auth():
@@ -187,7 +188,7 @@ def receivedMessage(event):
              sendTextMessage(senderID, "pong")
 
         elif "my events" in text:
-            sendTextMessage(senderID, google_cal.get_events_today())
+            sendTextMessage(senderID, google_cal.get_events_today(senderID))
 
         # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
@@ -325,7 +326,7 @@ def sendCarouselMessage(recipientId, elementList):
 
 
 def callSendAPI(messageData):
-    print messageData
+    print "messageData", messageData
     r = requests.post(
         "https://graph.facebook.com/v2.6/me/messages/?access_token=" +
         PAGE_ACCESS_TOKEN,
@@ -339,4 +340,6 @@ def callSendAPI(messageData):
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run()
