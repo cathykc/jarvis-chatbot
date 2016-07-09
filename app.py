@@ -57,6 +57,18 @@ def google_oauth2callback():
 def yelp_auth():
     return "YELP AUTH"
 
+# simulates a text message event
+@app.route("/message_test/<senderID>/<message>")
+def message_test(senderID=None, message=""):
+    print "hi"
+    event = {}
+    event['sender'] = {}
+    event['message'] = {}
+    event['sender']['id'] = senderID
+    event['message']['text'] = message
+    receivedMessage(event)
+    return "Check your server logs"
+
 # *****************************************************************************
 # CHATBOT WEBHOOK
 # *****************************************************************************
@@ -121,6 +133,9 @@ def receivedMessage(event):
         if 'ping' in text:
              sendTextMessage(senderID, "pong")
 
+        if "my events" in text:
+            sendTextMessage(senderID, google_cal.events_today())
+
         # Schedule coffee in Mission with Mom
         elif 'coffee' in text:
             split = text.split()
@@ -137,7 +152,20 @@ def receivedMessage(event):
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
 
-    
+# Pass in the message string and then arrays of text choices
+# e.g. matchType("schedule event", ["schedule", "plan"], ["event", "something"])
+# Not tested sorry guys don't kill me
+def matchType(text, *and_args):
+    for or_args in and_args:
+        found = False
+        for word in or_args:
+            if word in text:
+                found = True
+                break
+        if not found:
+            return False
+    return True
+
 
 
 def receivedPostback(event):
@@ -155,6 +183,7 @@ def sendTextMessage(recipientId, messageText):
     messageData = {'recipient': {'id': recipientId}}
     messageData['message'] = {'text': messageText}
 
+    print messageText
     callSendAPI(messageData)
 
 
