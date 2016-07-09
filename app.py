@@ -142,12 +142,13 @@ def receivedMessage(event):
             sendTextMessage(senderID, google_cal.events_today())
 
         # Schedule coffee in Mission with Mom
-        elif 'coffee' in text:
-            print "coffee"
+        elif 'schedule' in text:
             split = text.split()
             location = split[3]
-            response = yelp_api.get_top_locations('coffee', 3, location)
-            print response
+            food_type = split[1]
+            response = yelp_api.get_top_locations(food_type, 3, location)
+            sendTextMessage(senderID, "Here are the best places to get" +
+                            food_type + " in " + location)
             sendCarouselMessage(senderID, response)
 
     elif 'attachments' in message:
