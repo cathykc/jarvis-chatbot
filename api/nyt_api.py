@@ -16,10 +16,7 @@ def get_top_articles():
         article["subtitle"] = abstract
         article["item_url"] = r.json()['results'][i]['url']
         article["image_url"] = image_url
-
-        buttons = [{"type": "postback", "title" : "Read here",
-                    "payload"
-                    : "nyt payload"}]
+        buttons = []
         article["buttons"] = buttons
         articles.append(article)
     return articles
