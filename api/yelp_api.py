@@ -13,12 +13,15 @@ client = Client(auth)
 
 # prints the number of relevant results in that location
 def get_top_locations(type, number, location):
+    print "Entered the yelp function call"
     locations = {}
     params = {
         'term': type,
         'limit': number
     }
+    print "Entering the API call"
     response = client.search(location, **params)
+    print "made it through the API call"
     for business in response.businesses:
         name = business.name
         locations[name] = business.location.display_address
