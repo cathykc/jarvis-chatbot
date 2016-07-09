@@ -2,9 +2,12 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 # Returns access token and refresh token
-def authorize(authorization_code):
+def authorize(request):
     client_id = 'rFR4L19xgF5R'
     client_secret = 'pKzQ-w5cEypEPcxB2Ny6DHg2W1Ag1VUG'
+
+    authorization_code = request.args.get('code')
+    state = request.args.get('state')
 
     # Get access token
     oauth_url = 'https://api.lyft.com/oauth/token'
