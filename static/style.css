@@ -1,0 +1,83 @@
+body {
+	padding-top: 10%;
+}
+
+.container {
+	margin: auto;
+	width : 100%;
+	max-width: 900px;
+}
+
+.row:before, 
+.row:after {
+	content:"";
+	display: table;
+	clear:both;
+}
+
+.row {
+	height: 100%;
+	position: relative;
+	margin-bottom: 20px;
+}
+
+[class*='col-'] {
+	float: left;
+	min-height: 1px;
+	height: 100%;
+	text-align: center; 
+	display:block;
+	position: relative;
+}
+
+.col-4 {
+	width: 25%;
+	text-align: center;
+}
+
+@media all and (max-width:800px){
+	.col-4{ width: 100%; }
+}
+
+.auth_card {
+	display: inline-block;
+	border: 3px solid #EEE;
+	border-radius: 20px;
+	margin: 20px;
+	width: 200px;
+	height: 200px;
+}
+.auth_card:hover {
+	opacity: 0.4;
+}
+
+#lyft_card {
+	background: url("http://res.cloudinary.com/goodsearch/image/upload/v1419835891/hi_resolution_merchant_logos/lyft_coupons.png");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#google_card {
+	background: url("https://62e528761d0685343e1c-f3d1b99a743ffa4142d9d7f1978d9686.ssl.cf2.rackcdn.com/files/93616/area14mp/image-20150902-6700-t2axrz.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#fitbit_card {
+	background: url("https://index.tnwcdn.com/images/620ea20d3096ff399a780bd927dedd0bd2893435.png");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#venmo_card {
+	background: url("http://brand.venmo.com/assets/venmo_logo_blue.svg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+
+

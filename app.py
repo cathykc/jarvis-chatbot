@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, render_template, session
+from flask import Flask, request, render_template, session, url_for
 from api import google_cal, yelp_api, lyft
 import json
 import requests
@@ -54,9 +54,9 @@ def google_auth():
 def google_oauth2callback():
     return google_cal.oauth2callback()
 
-@app.route("/yelp_auth")
-def yelp_auth():
-    return "YELP AUTH"
+@app.route("/fitbit_auth")
+def fitbit_auth():
+    return "FITBIT AUTH"
 
 # simulates a text message event
 @app.route("/message_test/<senderID>/<message>")
