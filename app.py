@@ -1,8 +1,26 @@
 from flask import Flask, request, render_template
+from flask_sqlalchemy import SQLAlchemy
 from api import google_cal, yelp_api
 import json
 import requests
 app = Flask(__name__)
+
+# *****************************************************************************
+# DATABSASE AND MODELS
+# *****************************************************************************
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    facebook_id = db.Column(db.Integer, unique=True)
+
+    def __init__(self, facebook_id):
+        self.facebook_id = facebook_id
+
+    def __repr__(self):
+        return str(self.facebook_id)
 
 # *****************************************************************************
 # WEBAPP ROUTES
