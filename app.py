@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from api import google_cal, yelp_api
+from api import google_cal, yelp_api, nyt_api
 import json
 import requests
 app = Flask(__name__)
@@ -100,7 +100,12 @@ def receivedMessage(event):
             food_type = split[1]
             response = yelp_api.get_top_locations(food_type, 3, location)
             sendTextMessage(senderID, "Here are the best places to get " +
-                            food_type + " in " + location + ": ")
+                            food_type + " in " + location + ":  ")
+            sendCarouselMessage(senderID, response)
+
+        # nyt
+        elif 'nyt' in text:
+            response = yelp_api.get_top_articles()
             sendCarouselMessage(senderID, response)
 
     elif 'attachments' in message:
