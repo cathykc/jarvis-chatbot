@@ -120,6 +120,7 @@ def receivedMessage(event):
         elif 'coffee' in text:
             split = text.split()
             location = split[3]
+            print "before entering yelp file"
             response = yelp_api.get_top_locations('coffee', 3, location)
             # to_user = ""
             # i = 1
