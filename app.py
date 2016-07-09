@@ -123,18 +123,15 @@ def receivedMessage(event):
 
         # Schedule coffee in Mission with Mom
         elif 'coffee' in text:
-            print "enter method"
             split = text.split()
             location = split[3]
-            print "before entering yelp file"
             response = yelp_api.get_top_locations('coffee', 3, location)
-            # to_user = ""
-            # i = 1
-            # for r in response:
-            #     string = 'hi test test'
-                # to_user += i + " " + r + "\n"
-            print response
-            sendTextMessage(senderID, "coffee")
+            to_user = ""
+            i = 1
+            for r in response:
+                 string = 'hi test test'
+                 to_user += i + " " + r + "\n"
+            sendTextMessage(senderID, to_user)
         else:
             sendTextMessage(senderID, "Text received.")
 
