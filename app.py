@@ -2,6 +2,8 @@ from flask import Flask, request, render_template
 import json
 import requests
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy(app)
 
 # *****************************************************************************
 # WEBAPP ROUTES
