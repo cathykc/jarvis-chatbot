@@ -3,7 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from api import google_cal, yelp_api
 import json
 import requests
+import uuid
 app = Flask(__name__)
+app.secret_key = str(uuid.uuid4())
 
 # *****************************************************************************
 # DATABSASE AND MODELS
@@ -244,6 +246,4 @@ def callSendAPI(messageData):
 
 
 if __name__ == "__main__":
-    import uuid
-    app.secret_key = str(uuid.uuid4())
     app.run()
