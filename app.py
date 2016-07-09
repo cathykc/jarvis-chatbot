@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
+from api import google_cal, yelp_api
 import json
 import requests
 app = Flask(__name__)
@@ -38,7 +39,11 @@ def lyft_auth():
 
 @app.route("/google_auth")
 def google_auth():
-    return "GOOGLE AUTH"
+    return google_cal.oauth()
+
+@app.route('/google_oauth2callback')
+def google_oauth2callback():
+    return google_cal.oauth2callback()
 
 @app.route("/yelp_auth")
 def yelp_auth():
@@ -104,6 +109,19 @@ def receivedMessage(event):
 
     if 'text' in message:
         sendTextMessage(senderID, "Text received.")
+        text = message["text"]
+
+        #Schedule coffee in Mission with Mom
+        if 'coffee' in text:
+            split = text.split()
+            location = split[3]
+            response = yelp_api.get_top_locations('coffee', 3, location)
+            to_user = ""
+            i = 1
+            for r in response:
+                to_user += i + " " + r + "\n"
+            sendTextMessage(senderID, to_user)
+
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
 
@@ -219,4 +237,6 @@ def callSendAPI(messageData):
 
 
 if __name__ == "__main__":
+    import uuid
+    app.secret_key = str(uuid.uuid4())
     app.run()
