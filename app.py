@@ -39,9 +39,17 @@ def dashboard(senderID=None):
         return "Click in through Messenger"
     return render_template('dashboard.html')
 
-@app.route("/lyft_auth")
+@app.route("/lyft_auth_redirect")
 def lyft_auth():
-    return "LYFT AUTH"
+    client_id = 'rFR4L19xgF5R'
+    client_secret = 'pKzQ-w5cEypEPcxB2Ny6DHg2W1Ag1VUG'
+
+    authorization_code = request.args.get('code')
+    state = request.args.get('state')
+
+    (access_token, refresh_token) = authorize(authorizationCode)
+
+    return "Access token: " + access_token + " Refresh Token: " + refresh_token
 
 @app.route("/google_auth")
 def google_auth():
@@ -54,7 +62,6 @@ def google_oauth2callback():
 @app.route("/yelp_auth")
 def yelp_auth():
     return "YELP AUTH"
-
 
 # *****************************************************************************
 # CHATBOT WEBHOOK
