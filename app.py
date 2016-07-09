@@ -21,8 +21,11 @@ def lyft_auth():
 
 @app.route("/google_auth")
 def google_auth():
-    google_cal.main()
-    return "GOOGLE AUTH"
+    return google_cal.oauth()
+
+@app.route('/google_oauth2callback')
+def google_oauth2callback():
+    return google_cal.oauth2callback()
 
 @app.route("/yelp_auth")
 def yelp_auth():
@@ -216,4 +219,6 @@ def callSendAPI(messageData):
 
 
 if __name__ == "__main__":
+    import uuid
+    app.secret_key = str(uuid.uuid4())
     app.run()
