@@ -1,8 +1,27 @@
 from flask import Flask, request, render_template
+from flask_sqlalchemy import SQLAlchemy
 from api import google_cal, yelp_api
 import json
 import requests
+import os
 app = Flask(__name__)
+
+# *****************************************************************************
+# DATABSASE AND MODELS
+# *****************************************************************************
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') if os.environ.get('DATABASE_URL') else "sqlite:////tmp/test.db" 
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    facebook_id = db.Column(db.Integer, unique=True)
+
+    def __init__(self, facebook_id):
+        self.facebook_id = facebook_id
+
+    def __repr__(self):
+        return str(self.facebook_id)
 
 # *****************************************************************************
 # WEBAPP ROUTES
@@ -37,9 +56,13 @@ def yelp_auth():
 # *****************************************************************************
 
 # please excuse pulic keys - to move soon
-APP_SECRET = "763bc897c7ab402b870ad33a7cd59062"
-VALIDATION_TOKEN = "jarvis"
-PAGE_ACCESS_TOKEN = "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdqhpNHZAfZAWUVCzh9XmZCKcTV3ZBPIuH4ChfqfYaIkha2zLsazbyxoB8vJKFwr0qbwtwO7lbZBsiOgXfGjKq5zTmJvKrmnxKYqkmZCRZAnv1XKqlZCK4cnEQZDZD"
+# APP_SECRET = "763bc897c7ab402b870ad33a7cd59062"
+# VALIDATION_TOKEN = "jarvis"
+# PAGE_ACCESS_TOKEN = "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdqhpNHZAfZAWUVCzh9XmZCKcTV3ZBPIuH4ChfqfYaIkha2zLsazbyxoB8vJKFwr0qbwtwO7lbZBsiOgXfGjKq5zTmJvKrmnxKYqkmZCRZAnv1XKqlZCK4cnEQZDZD"
+APP_SECRET = os.environ.get('MESSENGER_APP_SECRET') if os.environ.get('MESSENGER_APP_SECRET') else "763bc897c7ab402b870ad33a7cd59062"
+VALIDATION_TOKEN = os.environ.get('MESSENGER_VALIDATION_TOKEN') if os.environ.get('MESSENGER_VALIDATION_TOKEN') else "jarvis"
+PAGE_ACCESS_TOKEN = os.environ.get('MESSENGER_PAGE_ACCESS_TOKEN') if os.environ.get('MESSENGER_PAGE_ACCESS_TOKEN') else "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdqhpNHZAfZAWUVCzh9XmZCKcTV3ZBPIuH4ChfqfYaIkha2zLsazbyxoB8vJKFwr0qbwtwO7lbZBsiOgXfGjKq5zTmJvKrmnxKYqkmZCRZAnv1XKqlZCK4cnEQZDZD"
+
 
 
 @app.route("/webhook", methods=['GET', 'POST'])
