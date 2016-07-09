@@ -127,7 +127,6 @@ def analyze(access_token, refresh_token):
             second_count = address['freq']
             second_count_address = address['address']
 
-
     home_address = max_count_address # ASSUMPTION
     work_address = second_count_address # ASSUMPTION
     home_lat = general_freq[home_address]['lat']

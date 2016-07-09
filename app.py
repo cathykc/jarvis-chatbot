@@ -90,6 +90,20 @@ def yelp_auth():
     return "YELP AUTH"
 
 # *****************************************************************************
+# DEMO TRIGGER ENDPOINTS
+# *****************************************************************************
+@app.route("/lyft_deeplink")
+def lyft_deeplink():
+    recipientId = request.args.get('recipientId')
+    buttonsList = [{
+        "type" : "web_url",
+        "url" : "http://jarvis-chatbot.herokupapp.com/lyft_deeplink",
+        "title" : "Get a Lyft to Work"
+    }]
+    sendButtonMessage(recipientId, 'Need a ride to work?', buttonList):
+
+
+# *****************************************************************************
 # CHATBOT WEBHOOK
 # *****************************************************************************
 
