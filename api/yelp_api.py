@@ -19,11 +19,9 @@ def get_top_locations(type, number, location):
         'limit': number
     }
     response = client.search(location, **params)
-
     for business in response.businesses:
         name = business.name
         locations[name] = business.location.display_address
-
         message = {}
         message["title"] = business.name
         message["subtitle"] = "Test subtitle"
