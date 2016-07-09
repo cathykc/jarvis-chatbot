@@ -1,34 +1,45 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Jarvis</title>
+    <link rel="stylesheet" type"text/css" href="{{ url_for('static',filename='style.css') }}"/>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald:300' rel='stylesheet' type='text/css'>
+</head>
 <body>
-  <script>
+    <script>
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId: "935782093214849",
+            xfbml: true,
+            version: "v2.6"
+          });
 
-    window.fbAsyncInit = function() {
-        console.log("HELLO???")
-      FB.init({
-        appId: "935782093214849",
-        xfbml: true,
-        version: "v2.6"
-      });
+        };
 
-    };
-
-    (function(d, s, id){
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) { return; }
-       js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/sdk.js";
-       fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-
-  </script>
-
-  HELLO
-
-    <div class="fb-messengermessageus" 
-        messenger_app_id={{ appID }}
-        page_id={{ pageID }},
-        color="blue"
-        size="standard" >
-    </div>  
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) { return; }
+           js = d.createElement(s); js.id = id;
+           js.src = "//connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <div class="container">
+        <div class="welcome">
+            Try Jarvis!
+        </div>
+        <div class="messenger-button">
+            <div class="fb-messengermessageus" 
+                messenger_app_id="935782093214849"
+                page_id="1763262920626478",
+                color="blue"
+                size="xlarge" >
+            </div>  
+        </div class="messenger-button">
+    </div>
 </body>
 </html>
