@@ -23,9 +23,11 @@ def lyft_auth():
     authorization_code = request.args.get('code')
     state = request.args.get('state')
 
-    (access_token, refresh_token) = authorize(authorizationCode)
+    (access_token, refresh_token) = lyft.authorize(authorization_code)
 
-    return "Access token: " + access_token + " Refresh Token: " + refresh_token
+    # Store access_token and refresh_token in db
+
+    return redirect("/", code=302)
 
 @app.route("/google_auth")
 def google_auth():
