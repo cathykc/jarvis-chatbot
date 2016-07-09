@@ -121,6 +121,9 @@ def receivedMessage(event):
         if 'ping' in text:
              sendTextMessage(senderID, "pong")
 
+        if "my events" in text:
+            sendTextMessage(senderID, google_cal.events_today())
+
         # Schedule coffee in Mission with Mom
         elif 'coffee' in text:
             split = text.split()
@@ -170,7 +173,8 @@ def sendTextMessage(recipientId, messageText):
 
     messageData = {'recipient': {'id': recipientId}}
     messageData['message'] = {'text': messageText}
-
+    
+    print messageText
     callSendAPI(messageData)
 
 
