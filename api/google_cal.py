@@ -1,78 +1,60 @@
-from __future__ import print_function
+from datetime import datetime, timedelta
+import pytz
+import json
+import flask
 import httplib2
-import os
 
 from apiclient import discovery
-import oauth2client
 from oauth2client import client
-from oauth2client import tools
 
-import datetime
+def oauth():
+  if 'google_credentials' not in flask.session:
+    return flask.redirect(flask.url_for('google_oauth2callback'))
+    # Getting credentials from flask.session
+  credentials = client.OAuth2Credentials.from_json(flask.session['google_credentials'])
+  if credentials.access_token_expired:
+    return flask.redirect(flask.url_for('google_oauth2callback'))
+  else:
+    # Already oauthed.
+    http_auth = credentials.authorize(httplib2.Http())
+    drive_service = discovery.build('drive', 'v2', http_auth)
+    files = drive_service.files().list().execute()
+    return json.dumps(files)
 
-try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-except ImportError:
-    flags = None
+def oauth2callback():
+  flow = client.flow_from_clientsecrets(
+      'google_client_secrets.json',
+      scope='https://www.googleapis.com/auth/calendar',
+      redirect_uri=flask.url_for('google_oauth2callback', _external=True))
+  if 'code' not in flask.request.args:
+    auth_uri = flow.step1_get_authorize_url()
+    return flask.redirect(auth_uri)
+  else:
+    auth_code = flask.request.args.get('code')
+    credentials = flow.step2_exchange(auth_code)
+    # Storing credentials in flask.session
+    flask.session['google_credentials'] = credentials.to_json()
+    return flask.redirect(flask.url_for('dashboard'))
 
-# If modifying these scopes, delete your previously saved credentials
-# at ~/.credentials/calendar-python-quickstart.json
-SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-CLIENT_SECRET_FILE = '../google_client_secret.json'
-APPLICATION_NAME = 'Google Calendar API Python Quickstart'
-
-
-def get_credentials():
-    """Gets valid user credentials from storage.
-
-    If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
-
-    Returns:
-        Credentials, the obtained credential.
-    """
-    home_dir = os.path.expanduser('~')
-    credential_dir = os.path.join(home_dir, '.credentials')
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir,
-                                   'calendar-python-quickstart.json')
-
-    store = oauth2client.file.Storage(credential_path)
-    credentials = store.get()
-    if not credentials or credentials.invalid:
-        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-        flow.user_agent = APPLICATION_NAME
-        if flags:
-            credentials = tools.run_flow(flow, store, flags)
-        else: # Needed only for compatibility with Python 2.6
-            credentials = tools.run(flow, store)
-        print('Storing credentials to ' + credential_path)
-    return credentials
-
-def main():
-    """Shows basic usage of the Google Calendar API.
-
-    Creates a Google Calendar API service object and outputs a list of the next
-    10 events on the user's calendar.
-    """
-    credentials = get_credentials()
+def get_events_today():
+    credentials = client.OAuth2Credentials.from_json(flask.session['google_credentials'])
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
+    now = datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    today = datetime.today()
+    start_of_today = datetime(today.year, today.month, today.day)
+    end_of_today = start_of_today + timedelta(1, 8) # Timezone difference
+    print end_of_today
+    end_of_today_iso = end_of_today.isoformat() + 'Z'
+    print 'Getting the upcoming events for today'
     eventsResult = service.events().list(
-        calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
+        calendarId='primary', timeMin=now, timeMax=end_of_today_iso, singleEvents=True,
         orderBy='startTime').execute()
     events = eventsResult.get('items', [])
 
     if not events:
-        print('No upcoming events found.')
+        print 'No upcoming events found.'
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
-
-
-if __name__ == '__main__':
-    main()
+        print start, event['summary']

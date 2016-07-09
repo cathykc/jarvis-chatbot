@@ -1,6 +1,41 @@
-<html>
-	<a href="/lyft_auth">Lyft</a>
-	<a href="/google_auth">Google</a>
-	<a href="/yelp_auth">Yelp</a>
-	<a href="/venmo_auth">Venmo</a>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<title>Dashboard</title>
+	<link rel="stylesheet" type"text/css" href="{{ url_for('static',filename='style.css') }}"/>
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Oswald:300' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-4">
+				<a href="https://www.lyft.com/oauth/authorize?client_id=rFR4L19xgF5R&response_type=code&scope=public rides.read offline&state=0">
+					<div class="auth_card" id="lyft_card"></div>
+				</a>
+			</div>
+			<div class="col-4">
+				<a href="/google_auth">
+					<div class="auth_card" id="google_card"></div>
+				</a>
+			</div>
+			<div class="col-4">
+				<a href="/fitbit_auth">
+					<div class="auth_card" id="fitbit_card"></div>
+				</a>
+			</div>
+			<div class="col-4">
+				<a href="/venmo_auth">
+					<div class="auth_card" id="venmo_card"></div>
+				</a>
+			<div>
+		</div>
+	</div>
+	
+</body>
+
 </html>

@@ -1,8 +1,29 @@
-from flask import Flask, request, render_template
-from api import google_cal, yelp_api, nyt_api
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, render_template, session, url_for
+from api import google_cal, yelp_api, lyft, nyt_api
 import json
 import requests
+import os
+import uuid
 app = Flask(__name__)
+app.secret_key = str(uuid.uuid4())
+
+# *****************************************************************************
+# DATABSASE AND MODELS
+# *****************************************************************************
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') if os.environ.get('DATABASE_URL') else "sqlite:////tmp/test.db" 
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    facebook_id = db.Column(db.Integer, unique=True)
+
+    def __init__(self, facebook_id):
+        self.facebook_id = facebook_id
+
+    def __repr__(self):
+        return str(self.facebook_id)
 
 # *****************************************************************************
 # WEBAPP ROUTES
@@ -12,31 +33,86 @@ app = Flask(__name__)
 @app.route("/<senderID>")
 def dashboard(senderID=None):
     if senderID == None:
-        return "Click in through Messenger"
+        return render_template('login.html', appID="935782093214849", pageID="1763262920626478")
+    session['fbid'] = senderID
     return render_template('dashboard.html')
 
-@app.route("/lyft_auth")
+@app.route("/lyft_deeplink")
+def lyft_deeplink():
+    # Determine what time of day it is
+    isMorning = True
+
+    # Get the user id
+
+    # Determine pickup and dropoff based on home, work, and isMorning flag
+    rideType = 'lyft_line'
+    # if isMorning:
+    #     # Retrieve work as destination
+    # else:
+    #     # Retrieve home as destination
+
+    # temp
+    dropoffLat = 37.75593
+    dropoffLong = -122.41091
+
+    return render_template('lyft_deeplink.html', rideType=rideType, dropoffLat=dropoffLat, dropoffLong=dropoffLong)
+    
+
+@app.route("/lyft_auth_redirect")
 def lyft_auth():
-    return "LYFT AUTH"
+    # auth lyft
+    (access_token, refresh_token) = lyft.authorize(request)
+
+    # Get signal
+    (go_home_time,
+            home_address,
+            home_lat,
+            home_long,
+            go_to_work_time,
+            work_address,
+            work_lat,
+            work_long) = lyft.analyze(access_token, refresh_token)
+
+    # Store access_token and refresh_token in db
+    fbid = session['fbid']
+
+    return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
 
 @app.route("/google_auth")
 def google_auth():
-    google_cal.main()
-    return "GOOGLE AUTH"
+    return google_cal.oauth()
 
-@app.route("/yelp_auth")
-def yelp_auth():
-    return "YELP AUTH"
+@app.route('/google_oauth2callback')
+def google_oauth2callback():
+    return google_cal.oauth2callback()
 
+@app.route("/fitbit_auth")
+def fitbit_auth():
+    return "FITBIT AUTH"
+
+# simulates a text message event
+@app.route("/message_test/<senderID>/<message>")
+def message_test(senderID=None, message=""):
+    event = {}
+    event['sender'] = {}
+    event['message'] = {}
+    event['sender']['id'] = senderID
+    event['message']['text'] = message
+    receivedMessage(event)
+    return "Check your server logs"
 
 # *****************************************************************************
 # CHATBOT WEBHOOK
 # *****************************************************************************
 
 # please excuse pulic keys - to move soon
-APP_SECRET = "763bc897c7ab402b870ad33a7cd59062"
-VALIDATION_TOKEN = "jarvis"
-PAGE_ACCESS_TOKEN = "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdqhpNHZAfZAWUVCzh9XmZCKcTV3ZBPIuH4ChfqfYaIkha2zLsazbyxoB8vJKFwr0qbwtwO7lbZBsiOgXfGjKq5zTmJvKrmnxKYqkmZCRZAnv1XKqlZCK4cnEQZDZD"
+# APP_SECRET = "763bc897c7ab402b870ad33a7cd59062"
+# VALIDATION_TOKEN = "jarvis"
+# PAGE_ACCESS_TOKEN = "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdqhpNHZAfZAWUVCzh9XmZCKcTV3ZBPIuH4ChfqfYaIkha2zLsazbyxoB8vJKFwr0qbwtwO7lbZBsiOgXfGjKq5zTmJvKrmnxKYqkmZCRZAnv1XKqlZCK4cnEQZDZD"
+APP_SECRET = os.environ.get('MESSENGER_APP_SECRET') if os.environ.get('MESSENGER_APP_SECRET') else "763bc897c7ab402b870ad33a7cd59062"
+VALIDATION_TOKEN = os.environ.get('MESSENGER_VALIDATION_TOKEN') if os.environ.get('MESSENGER_VALIDATION_TOKEN') else "jarvis"
+PAGE_ACCESS_TOKEN = os.environ.get('MESSENGER_PAGE_ACCESS_TOKEN') if os.environ.get('MESSENGER_PAGE_ACCESS_TOKEN') else "EAANTFr9A1IEBAFi3QsRXDkZBl5yVYZC5XrCuqUxZCXDcc2Y9rD3LEqAtdqhpNHZAfZAWUVCzh9XmZCKcTV3ZBPIuH4ChfqfYaIkha2zLsazbyxoB8vJKFwr0qbwtwO7lbZBsiOgXfGjKq5zTmJvKrmnxKYqkmZCRZAnv1XKqlZCK4cnEQZDZD"
+
 
 
 @app.route("/webhook", methods=['GET', 'POST'])
@@ -93,6 +169,9 @@ def receivedMessage(event):
         if 'ping' in text:
              sendTextMessage(senderID, "pong")
 
+        if "my events" in text:
+            sendTextMessage(senderID, google_cal.get_events_today())
+
         # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
             split = text.split()
@@ -111,7 +190,20 @@ def receivedMessage(event):
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
 
-    
+# Pass in the message string and then arrays of text choices
+# e.g. matchType("schedule event", ["schedule", "plan"], ["event", "something"])
+# Not tested sorry guys don't kill me
+def matchType(text, *and_args):
+    for or_args in and_args:
+        found = False
+        for word in or_args:
+            if word in text:
+                found = True
+                break
+        if not found:
+            return False
+    return True
+
 
 
 def receivedPostback(event):
@@ -129,6 +221,7 @@ def sendTextMessage(recipientId, messageText):
     messageData = {'recipient': {'id': recipientId}}
     messageData['message'] = {'text': messageText}
 
+    print messageText
     callSendAPI(messageData)
 
 
