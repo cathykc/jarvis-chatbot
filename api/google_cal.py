@@ -8,6 +8,7 @@ from oauth2client import client
 def oauth():
   if 'credentials' not in flask.session:
     return flask.redirect(flask.url_for('google_oauth2callback'))
+    # Getting credentials from flask.session
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
     return flask.redirect(flask.url_for('google_oauth2callback'))
@@ -29,5 +30,6 @@ def oauth2callback():
   else:
     auth_code = flask.request.args.get('code')
     credentials = flow.step2_exchange(auth_code)
+    # Storing credentials in flask.session
     flask.session['credentials'] = credentials.to_json()
     return flask.redirect(flask.url_for('dashboard'))
