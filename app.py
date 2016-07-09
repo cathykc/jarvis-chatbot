@@ -99,8 +99,8 @@ def receivedMessage(event):
             location = split[3]
             food_type = split[1]
             response = yelp_api.get_top_locations(food_type, 3, location)
-            sendTextMessage(senderID, "Here are the best places to get" +
-                            food_type + " in " + location)
+            sendTextMessage(senderID, "Here are the best places to get " +
+                            food_type + " in " + location + ": ")
             sendCarouselMessage(senderID, response)
 
     elif 'attachments' in message:
