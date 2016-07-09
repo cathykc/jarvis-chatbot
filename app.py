@@ -92,8 +92,9 @@ def yelp_auth():
 # *****************************************************************************
 # DEMO TRIGGER ENDPOINTS
 # *****************************************************************************
-@app.route("/lyft_deeplink")
+@app.route("/lyft_trigger")
 def lyft_deeplink():
+
     recipientId = request.args.get('recipientId')
     buttonsList = [{
         "type" : "web_url",
