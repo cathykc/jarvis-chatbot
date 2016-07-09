@@ -31,10 +31,3 @@ def oauth2callback():
     credentials = flow.step2_exchange(auth_code)
     flask.session['credentials'] = credentials.to_json()
     return flask.redirect(flask.url_for('dashboard'))
-
-
-if __name__ == '__main__':
-  import uuid
-  app.secret_key = str(uuid.uuid4())
-  app.debug = False
-  app.run()
