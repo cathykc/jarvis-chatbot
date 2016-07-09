@@ -2,7 +2,9 @@ from flask import Flask, request, render_template
 from api import google_cal
 import json
 import requests
+import uuid
 app = Flask(__name__)
+app.secret_key = str(uuid.uuid4())
 
 # *****************************************************************************
 # WEBAPP ROUTES
@@ -206,6 +208,4 @@ def callSendAPI(messageData):
 
 
 if __name__ == "__main__":
-    import uuid
-    app.secret_key = str(uuid.uuid4())
     app.run()
