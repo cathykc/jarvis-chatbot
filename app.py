@@ -140,7 +140,20 @@ def receivedMessage(event):
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
 
-    
+# Pass in the message string and then arrays of text choices
+# e.g. matchType("schedule event", ["schedule", "plan"], ["event", "something"])
+# Not tested sorry guys don't kill me
+def matchType(text, *and_args):
+    for or_args in and_args:
+        found = False
+        for word in or_args:
+            if word in text:
+                found = True
+                break
+        if not found:
+            return False
+    return True
+
 
 
 def receivedPostback(event):
