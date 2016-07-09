@@ -3,9 +3,15 @@ import json
 import requests
 app = Flask(__name__)
 
+# *****************************************************************************
+# WEBAPP ROUTES
+# *****************************************************************************
 
 @app.route("/")
-def dashboard():
+@app.route("/<senderID>")
+def dashboard(senderID=None):
+    if senderID == None:
+        return "Click in through Messenger"
     return render_template('dashboard.html')
 
 @app.route("/lyft_auth")
