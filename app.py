@@ -169,7 +169,7 @@ def receivedMessage(event):
         if 'ping' in text:
              sendTextMessage(senderID, "pong")
 
-        if "my events" in text:
+        elif "my events" in text:
             sendTextMessage(senderID, google_cal.get_events_today())
 
         # Schedule coffee in Mission with Mom
@@ -184,8 +184,10 @@ def receivedMessage(event):
 
         # nyt
         elif 'nyt' in text:
-            response = yelp_api.get_top_articles()
+            response = nyt_api.get_top_articles()
             sendCarouselMessage(senderID, response)
+        else:
+            sendTextMessage(senderID, "catch all response")
 
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
