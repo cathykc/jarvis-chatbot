@@ -1,6 +1,6 @@
-from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from api import google_cal, yelp_api
+from flask import Flask, request, render_template, session
+from api import google_cal, yelp_api, lyft
 import json
 import requests
 import uuid
@@ -33,11 +33,17 @@ class User(db.Model):
 def dashboard(senderID=None):
     if senderID == None:
         return "Click in through Messenger"
+    session['fbid'] = senderID
     return render_template('dashboard.html')
 
-@app.route("/lyft_auth")
+@app.route("/lyft_auth_redirect")
 def lyft_auth():
-    return "LYFT AUTH"
+    (access_token, refresh_token) = lyft.authorize(request)
+
+    fbid = session['fbid']
+
+    # Store access_token and refresh_token in db
+    return "Got them for fbid: " + fbid 
 
 @app.route("/google_auth")
 def google_auth():
@@ -50,7 +56,6 @@ def google_oauth2callback():
 @app.route("/yelp_auth")
 def yelp_auth():
     return "YELP AUTH"
-
 
 # *****************************************************************************
 # CHATBOT WEBHOOK
