@@ -92,14 +92,15 @@ def receivedMessage(event):
 
         #Schedule coffee in Mission with Mom
         if 'coffee' in text:
-            split = text.split()
-            location = split[3]
-            response = yelp_api.get_top_locations('coffee', 3, location)
-            to_user = ""
-            i = 1
-            for r in response:
-                to_user += i + " " + r + "\n"
-            sendTextMessage(senderID, to_user)
+            # split = text.split()
+            # location = split[3]
+            # response = yelp_api.get_top_locations('coffee', 3, location)
+            # to_user = ""
+            # i = 1
+            # for r in response:
+            #     string = 'hi test test'
+                # to_user += i + " " + r + "\n"
+            sendTextMessage(senderID, "coffee")
         else:
             sendTextMessage(senderID, "Text received.")
 
