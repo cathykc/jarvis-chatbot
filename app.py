@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template
+from api import google_cal
 import json
 import requests
 app = Flask(__name__)
@@ -22,6 +23,7 @@ def lyft_auth():
 
 @app.route("/google_auth")
 def google_auth():
+    google_cal.main()
     return "GOOGLE AUTH"
 
 @app.route("/yelp_auth")
