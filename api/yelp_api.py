@@ -25,9 +25,9 @@ def get_top_locations(type, number, location):
         # locations[name] = business.location.display_address
         message = {}
         message["title"] = business.name
-        message["subtitle"] = "Test subtitle"
+        message["subtitle"] = business.snippet_text
         message["item_url"] = business.url
-        message["image_url"] = business.image_url
+        message["image_url"] = business.snippet_image_url
 
         buttons = [{"type": "postback", "title" : "Call Postback", "payload"
                     : "payload for yelp homies"}]
