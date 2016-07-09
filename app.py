@@ -8,8 +8,6 @@ app = Flask(__name__)
 def dashboard():
     return render_template('dashboard.html')
 
-
-
 # *****************************************************************************
 # CHATBOT WEBHOOK
 # *****************************************************************************
@@ -64,6 +62,9 @@ def webhook():
 def receivedMessage(event):
     senderID = event['sender']['id']
     message = event['message']
+
+    print senderID
+    print message
 
     if 'text' in message:
         sendTextMessage(senderID, "Text received.")
