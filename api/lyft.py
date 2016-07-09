@@ -2,7 +2,6 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 # Returns access token and refresh token
-
 def authorize(authorization_code):
     client_id = 'rFR4L19xgF5R'
     client_secret = 'pKzQ-w5cEypEPcxB2Ny6DHg2W1Ag1VUG'
@@ -15,8 +14,7 @@ def authorize(authorization_code):
     refresh_token = r.json()['refresh_token']
 
     return (access_token, refresh_token)
-    
-    
+   
 def get_ride_history():
     # Use access token to get ride history
     ride_history_url = 'https://api.lyft.com/v1/rides?start_time=2016-01-01T21:04:22Z&end_time=2016-07-05T21:04:22Z&limit=50'
