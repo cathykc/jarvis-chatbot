@@ -1,4 +1,5 @@
-import datetime
+from datetime import datetime, timedelta
+import pytz
 import json
 import flask
 import httplib2
@@ -35,15 +36,20 @@ def oauth2callback():
     flask.session['google_credentials'] = credentials.to_json()
     return flask.redirect(flask.url_for('dashboard'))
 
-def events_today():
+def get_events_today():
     credentials = client.OAuth2Credentials.from_json(flask.session['google_credentials'])
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print 'Getting the upcoming 10 events'
+    now = datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    today = datetime.today()
+    start_of_today = datetime(today.year, today.month, today.day)
+    end_of_today = start_of_today + timedelta(1, 8) # Timezone difference
+    print end_of_today
+    end_of_today_iso = end_of_today.isoformat() + 'Z'
+    print 'Getting the upcoming events for today'
     eventsResult = service.events().list(
-        calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
+        calendarId='primary', timeMin=now, timeMax=end_of_today_iso, singleEvents=True,
         orderBy='startTime').execute()
     events = eventsResult.get('items', [])
 
