@@ -1,10 +1,12 @@
-from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from api import google_cal, yelp_api
+from flask import Flask, request, render_template, session
+from api import google_cal, yelp_api, lyft
 import json
 import requests
 import os
+import uuid
 app = Flask(__name__)
+app.secret_key = str(uuid.uuid4())
 
 # *****************************************************************************
 # DATABSASE AND MODELS
@@ -32,11 +34,17 @@ class User(db.Model):
 def dashboard(senderID=None):
     if senderID == None:
         return "Click in through Messenger"
+    session['fbid'] = senderID
     return render_template('dashboard.html')
 
-@app.route("/lyft_auth")
+@app.route("/lyft_auth_redirect")
 def lyft_auth():
-    return "LYFT AUTH"
+    (access_token, refresh_token) = lyft.authorize(request)
+
+    fbid = session['fbid']
+
+    # Store access_token and refresh_token in db
+    return "Got them for fbid: " + fbid 
 
 @app.route("/google_auth")
 def google_auth():
@@ -50,6 +58,17 @@ def google_oauth2callback():
 def yelp_auth():
     return "YELP AUTH"
 
+# simulates a text message event
+@app.route("/message_test/<senderID>/<message>")
+def message_test(senderID=None, message=""):
+    print "hi"
+    event = {}
+    event['sender'] = {}
+    event['message'] = {}
+    event['sender']['id'] = senderID
+    event['message']['text'] = message
+    receivedMessage(event)
+    return "Check your server logs"
 
 # *****************************************************************************
 # CHATBOT WEBHOOK
@@ -113,24 +132,39 @@ def receivedMessage(event):
     print message
 
     if 'text' in message:
-        sendTextMessage(senderID, "Text received.")
+        # sendTextMessage(senderID, "Text received.")
         text = message["text"]
 
-        #Schedule coffee in Mission with Mom
-        if 'coffee' in text:
+        if 'ping' in text:
+             sendTextMessage(senderID, "pong")
+
+        if "my events" in text:
+            sendTextMessage(senderID, google_cal.events_today())
+
+        # Schedule coffee in Mission with Mom
+        elif 'coffee' in text:
             split = text.split()
             location = split[3]
             response = yelp_api.get_top_locations('coffee', 3, location)
-            to_user = ""
-            i = 1
-            for r in response:
-                to_user += i + " " + r + "\n"
-            sendTextMessage(senderID, to_user)
+            sendCarouselMessage(senderID, response)
 
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
 
-    
+# Pass in the message string and then arrays of text choices
+# e.g. matchType("schedule event", ["schedule", "plan"], ["event", "something"])
+# Not tested sorry guys don't kill me
+def matchType(text, *and_args):
+    for or_args in and_args:
+        found = False
+        for word in or_args:
+            if word in text:
+                found = True
+                break
+        if not found:
+            return False
+    return True
+
 
 
 def receivedPostback(event):
@@ -148,6 +182,7 @@ def sendTextMessage(recipientId, messageText):
     messageData = {'recipient': {'id': recipientId}}
     messageData['message'] = {'text': messageText}
 
+    print messageText
     callSendAPI(messageData)
 
 
@@ -216,6 +251,8 @@ def sendButtonMessage(recipientId, messageText, buttonList):
 #         payload: "Payload for second bubble",
 #     }]
 # }]
+
+# elementList is a list of JSON objects
 def sendCarouselMessage(recipientId, elementList):
     messageData = {'recipient': {'id': recipientId}}
 
@@ -242,6 +279,4 @@ def callSendAPI(messageData):
 
 
 if __name__ == "__main__":
-    import uuid
-    app.secret_key = str(uuid.uuid4())
     app.run()
