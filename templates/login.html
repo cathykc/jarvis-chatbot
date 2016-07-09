@@ -1,0 +1,34 @@
+<html>
+<body>
+  <script>
+
+    window.fbAsyncInit = function() {
+        console.log("HELLO???")
+      FB.init({
+        appId: "935782093214849",
+        xfbml: true,
+        version: "v2.6"
+      });
+
+    };
+
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) { return; }
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+  </script>
+
+  HELLO
+
+    <div class="fb-messengermessageus" 
+        messenger_app_id={{ appID }}
+        page_id={{ pageID }},
+        color="blue"
+        size="standard" >
+    </div>  
+</body>
+</html>

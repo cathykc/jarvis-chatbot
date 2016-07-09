@@ -33,7 +33,7 @@ class User(db.Model):
 @app.route("/<senderID>")
 def dashboard(senderID=None):
     if senderID == None:
-        return "Click in through Messenger"
+        return render_template('login.html', appID="935782093214849", pageID="1763262920626478")
     session['fbid'] = senderID
     return render_template('dashboard.html')
 
