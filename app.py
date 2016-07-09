@@ -60,7 +60,6 @@ def yelp_auth():
 # simulates a text message event
 @app.route("/message_test/<senderID>/<message>")
 def message_test(senderID=None, message=""):
-    print "hi"
     event = {}
     event['sender'] = {}
     event['message'] = {}
@@ -134,7 +133,7 @@ def receivedMessage(event):
              sendTextMessage(senderID, "pong")
 
         if "my events" in text:
-            sendTextMessage(senderID, google_cal.events_today())
+            sendTextMessage(senderID, google_cal.get_events_today())
 
         # Schedule coffee in Mission with Mom
         elif 'coffee' in text:
