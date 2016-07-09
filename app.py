@@ -185,6 +185,8 @@ def receivedMessage(event):
         # nyt
         elif 'nyt' in text:
             response = nyt_api.get_top_articles()
+            sendTextMessage(senderID, "Here are the most popular articles "
+                                      "today: ")
             sendCarouselMessage(senderID, response)
         else:
             sendTextMessage(senderID, "catch all response")
