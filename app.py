@@ -87,7 +87,7 @@ def receivedMessage(event):
     print message
 
     if 'text' in message:
-        sendTextMessage(senderID, "Text received.")
+        # sendTextMessage(senderID, "Text received.")
         text = message["text"]
 
         #Schedule coffee in Mission with Mom
@@ -100,6 +100,8 @@ def receivedMessage(event):
             for r in response:
                 to_user += i + " " + r + "\n"
             sendTextMessage(senderID, to_user)
+        else:
+            sendTextMessage(senderID, "Text received.")
 
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
