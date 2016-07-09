@@ -98,6 +98,7 @@ def receivedMessage(event):
             split = text.split()
             location = split[3]
             response = yelp_api.get_top_locations('coffee', 3, location)
+            print response
             sendCarouselMessage(senderID, response)
 
     elif 'attachments' in message:
