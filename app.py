@@ -99,10 +99,9 @@ def receivedMessage(event):
             location = split[3]
             response = yelp_api.get_top_locations('coffee', 3, location)
             to_user = ""
-            i = 1
-            for r in response:
-                 string = 'hi test test'
-                 to_user += i + " " + r + "\n"
+            # i = 1
+            for r in response.keys():
+                to_user += r
             sendTextMessage(senderID, to_user)
         else:
             sendTextMessage(senderID, "Text received.")
