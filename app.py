@@ -105,7 +105,7 @@ def message_test(senderID=None, message=""):
 # DEMO TRIGGER ENDPOINTS
 # *****************************************************************************
 @app.route("/lyft_trigger")
-def lyft_deeplink():
+def lyft_trigger():
 
     recipientId = request.args.get('recipientId')
     buttonsList = [{
