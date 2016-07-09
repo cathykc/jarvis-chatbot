@@ -115,6 +115,8 @@ def lyft_trigger():
     }]
     sendButtonMessage(recipientId, 'Need a ride to work?', buttonsList)
 
+    return "Sent Message"
+
 
 # *****************************************************************************
 # CHATBOT WEBHOOK
