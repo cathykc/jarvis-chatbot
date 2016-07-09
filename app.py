@@ -1,6 +1,10 @@
 from flask import Flask, request, render_template
+<<<<<<< 588dc846d7e1cdd1f3f11a66b04f65be4dfd8d45
 from flask_sqlalchemy import SQLAlchemy
 from api import google_cal, yelp_api
+=======
+from api import google_cal, yelp_api, lyft
+>>>>>>> changes
 import json
 import requests
 import uuid
