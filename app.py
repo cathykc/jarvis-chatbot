@@ -95,6 +95,7 @@ def receivedMessage(event):
 
         # Schedule coffee in Mission with Mom
         elif 'coffee' in text:
+            print "coffee"
             split = text.split()
             location = split[3]
             response = yelp_api.get_top_locations('coffee', 3, location)
