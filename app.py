@@ -98,13 +98,7 @@ def receivedMessage(event):
             split = text.split()
             location = split[3]
             response = yelp_api.get_top_locations('coffee', 3, location)
-            to_user = ""
-            # i = 1
-            for r in response.keys():
-                to_user += r
-            sendTextMessage(senderID, to_user)
-        else:
-            sendTextMessage(senderID, "Text received.")
+            sendCarouselMessage(senderID, response)
 
     elif 'attachments' in message:
         sendTextMessage(senderID, "Attachment received.")
@@ -195,6 +189,8 @@ def sendButtonMessage(recipientId, messageText, buttonList):
 #         payload: "Payload for second bubble",
 #     }]
 # }]
+
+# elementList is a list of JSON objects
 def sendCarouselMessage(recipientId, elementList):
     messageData = {'recipient': {'id': recipientId}}
 
