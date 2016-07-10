@@ -21,17 +21,19 @@
         <div class="row">
             <span class="event_info">
                 {{e.id}} --- Type: 
-                {% if e.trigger_enum == 1 %}
-                    Morning Info Card
-                {% elif e.trigger_enum == 2 %}
-                    Morning Lyft
-                {% elif e.trigger_enum == 3 %}
-                    Afternoon Lyft
-                {% elif e.trigger_enum == 4 %}
-                    Calendar Event Reminder
-                {% else %}
-                    Unknown Type
-                {% endif %}
+                <span class="event_type">
+                    {% if e.trigger_enum == 1 %}
+                        Morning Info Card
+                    {% elif e.trigger_enum == 2 %}
+                        Morning Lyft
+                    {% elif e.trigger_enum == 3 %}
+                        Afternoon Lyft
+                    {% elif e.trigger_enum == 4 %}
+                        Calendar Event Reminder
+                    {% else %}
+                        Unknown Type
+                    {% endif %}
+                </span>
 
                 | Facebook ID: {{ e.facebook_id }} | <strong>
                 (
