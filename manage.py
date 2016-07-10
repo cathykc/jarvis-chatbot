@@ -468,6 +468,7 @@ def receivedPostback(event):
     payload = event['postback']['payload']
 
     if payload is None or payload == "noop":
+        sendTextMessage(facebook_id, "Sounds good!")
         return
 
     if payload == "GET_STARTED":
