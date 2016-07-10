@@ -114,12 +114,12 @@ def foursquare_auth(facebook_id=None):
 def google_auth(facebook_id=None):
     if facebook_id == None:
         return render_template('login.html')
-    session['facebook_id'] = facebook_id
+    # session['facebook_id'] = facebook_id
     return google_cal.oauth(facebook_id)
 
 @app.route("/google_oauth2callback")
 def google_oauth2callback():
-    facebook_id = session['facebook_id']
+    facebook_id = request.args.get("state")
     if facebook_id == None:
         return render_template('login.html')
     return google_cal.oauth2callback(facebook_id)

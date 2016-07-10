@@ -15,10 +15,10 @@ def oauth(facebook_id):
         return "User not found"
     print "google credentials", user.google_credentials
     if not user.google_credentials:
-        return flask.redirect(flask.url_for('google_oauth2callback'))       
+        return flask.redirect(flask.url_for('google_oauth2callback', state=facebook_id))       
     credentials = client.OAuth2Credentials.from_json(json.loads(user.google_credentials))
     if credentials.access_token_expired:
-        return flask.redirect(flask.url_for('google_oauth2callback'))
+        return flask.redirect(flask.url_for('google_oauth2callback', state=facebook_id))
     else:
         # Already oauthed.
         return "Already oauthed"
@@ -28,6 +28,7 @@ def oauth2callback(facebook_id):
         'google_client_secrets.json',
         scope='https://www.googleapis.com/auth/calendar',
         redirect_uri=flask.url_for('google_oauth2callback', _external=True))
+    flow.params['state'] = facebook_id
     if 'code' not in flask.request.args:
         auth_uri = flow.step1_get_authorize_url()
         return flask.redirect(auth_uri)
