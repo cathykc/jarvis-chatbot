@@ -8,7 +8,7 @@ import requests
 import os
 import uuid
 import parse_query
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
@@ -201,8 +201,18 @@ def receivedMessage(event):
                 facebook_id, 
                 "Test Event",
                 "1 Hacker Way",
-                google_cal.now(),
-                google_cal.minutes_later(60),
+                google_cal.now().isoformat(),
+                google_cal.minutes_later(datetime.now(), 60).isoformat(),
+                ["danielzh@sas.upenn.edu"]
+            )
+
+        elif "event at 7" in text:
+            google_cal.create_event(
+                facebook_id, 
+                "Test Event",
+                "1 Hacker Way",
+                google_cal.today_at(19, 0).isoformat(),
+                google_cal.minutes_later(google_cal.today_at(19, 0), 60).isoformat(),
                 ["danielzh@sas.upenn.edu"]
             )
 

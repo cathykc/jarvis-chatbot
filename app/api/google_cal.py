@@ -51,10 +51,17 @@ def oauth2callback(facebook_id):
         return flask.redirect(flask.url_for('dashboard', facebook_id=facebook_id))
 
 def now():
-    return datetime.now().isoformat()
+    return datetime.now()
 
-def minutes_later(minutes):
-    return (datetime.now() + timedelta(minutes=minutes)).isoformat()
+def minutes_later(original_datetime, minutes):
+    return (original_datetime + timedelta(minutes=minutes))
+
+def minutes_before(original_datetime, minutes):
+    return (original_datetime - timedelta(minutes=minutes))
+
+# hour out of 24
+def today_at(hour, minute):
+    return datetime.now().replace(hour=hour, minute=minute)
 
 def get_events_today(facebook_id):
     user = User.query.get(facebook_id)
