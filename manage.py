@@ -331,8 +331,7 @@ def receivedMessage(event):
         else:
             sendTextMessage(facebook_id, "Sorry, I don't quite understand what "
                                          "you "
-                                         "said! Type "
-                                             " \'help me\' for help.")
+                                         "said! Type  \'help me\' for help.")
 
     elif 'attachments' in message:
         sendTextMessage(facebook_id, "Attachment received.")
