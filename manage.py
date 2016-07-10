@@ -76,6 +76,10 @@ def foursquare_push():
     print(request.args)
     print('hello')
     print(request)
+    print(request.values)
+    print(request.values.get('checkin'))
+    print(request.form)
+    print(request.form.get('checkin'))
 
     data = json.loads(request.data)
     print(data)
