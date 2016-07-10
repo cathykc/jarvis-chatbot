@@ -226,7 +226,13 @@ def receivedMessage(event):
         text = message["text"].lower()
 
         if 'ping' in text:
-             sendTextMessage(facebook_id, "pong")
+            sendTextMessage(facebook_id, "pong")
+
+        elif 'morning card' in text:
+            sendMorningCard(facebook_id)
+
+        elif 'weather' in text:
+            sendWeather(facebook_id)
 
         elif 'fuck' in text or 'shit' in text or 'damn' in text:
             sendTextMessage(facebook_id, "Watch your language!")
@@ -238,20 +244,8 @@ def receivedMessage(event):
                 in text:
             sendTextMessage(facebook_id, "I'm good! I hope you are, too!")
 
-        elif 'weather' in text:
-            print "HELLO HELLO WEATHER WEATHER"
-            # TO DO : check if morning - hardcode morning for now
-            # currently hard-coded (ideally get from lyft addrress)
-            weather = weather_api.getWeatherConditions("San Francisco")
-            sendTextMessage(facebook_id, "Good morning {}! Today in {} it is {} with a temperature of {}.".format(first_name, weather["city"], weather["weather"], weather["temperature"]))
-
         elif "my events" in text:
-            events = google_cal.get_events_today(facebook_id)
-            events_formatted = []
-            for event in events:
-                events_formatted.append(event["start_time"] + ": " + event["title"])
-
-            sendTextMessage(facebook_id, "\n".join(events_formatted))
+            sendEventDigest(facebook_id)
 
         elif "event right now" in text:
             google_cal.create_event(
@@ -418,6 +412,29 @@ def receivedPostback(event):
         google_cal.create_event(facebook_id, parsed['summary'],
                                 parsed['address'], time, end_time, emails)
         sendTextMessage(facebook_id, "Putting this event into your calendar!")
+
+# *****************************************************************************
+# MESSAGE CREATION FUNCTION DUMP
+# *****************************************************************************
+
+def sendMorningCard(facebook_id):
+    sendWeather(facebook_id)
+    sendEventDigest(facebook_id)
+
+def sendWeather(facebook_id):
+    r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
+    first_name = r.json()["first_name"]
+    weather = weather_api.getWeatherConditions("San Francisco")
+    sendTextMessage(facebook_id, "Good morning {}! Today in {} it is {} with a temperature of {}.".format(first_name, weather["city"], weather["weather"], weather["temperature"]))
+
+def sendEventDigest(facebook_id):
+    events = google_cal.get_events_today(facebook_id)
+    events_formatted = []
+    for event in events:
+        events_formatted.append(event["start_time"] + ": " + event["title"])
+
+    sendTextMessage(facebook_id, "Here's what you're doing today:\n\n"+ "\n".join(events_formatted))
+
 
 
 # *****************************************************************************
