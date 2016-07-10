@@ -557,8 +557,8 @@ def am_i_busy(num):
     if num <= 2:
         return ""
     elif num <= 4:
-        return "Looks like you're a little busy today! You have " + num \
-               + "events."
+        return "Looks like you're a little busy today! You have " + str(num) \
+               + " events."
     elif num >= 5:
         return "You're very busy today! You have" + num + "events!"
 
