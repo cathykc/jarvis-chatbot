@@ -621,7 +621,7 @@ def sendFreeTimeMessage(first_name, event_name, facebook_id, interval_length_in_
             })
         sendButtonMessage(
             facebook_id,
-            "Here are some times you're free, let me know if you want me to schedule {} in!".format(event_name),
+            "Here are some times you're free!".format(event_name),
             buttonList
         )
 
