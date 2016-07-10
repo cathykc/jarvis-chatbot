@@ -209,7 +209,7 @@ def receivedMessage(event):
     facebook_id = event['sender']['id']
     message = event['message']
 
-    print facebook_id
+    # print facebook_id
     print "---------------------------------"
     print message
 
