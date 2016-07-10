@@ -11,6 +11,18 @@
 </head>
 
 <body>
+
+	<div id="loading_background">
+		<div class="loading_animation">
+			<img src="{{ url_for('static',filename='loading.gif') }}"/>
+			<div id="loading_text">
+				...Teaching Jarvis
+			</div>
+		</div>
+	</div>
+	<div class="footer" id="teach">
+		<div class="teach">Teach Jarvis!</div>
+	</div>
 	<div class="container">
 		<div class="row">
 			<div class="col-4">
@@ -78,4 +90,32 @@
 	</div>
 	
 </body>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#teach").click(function() {
+		console.log("hello");
+		$("#loading_background").show();
+
+		setTimeout(function(){
+		  	$("#loading_text").html("...Analyzing Lyft Data")
+		 	setTimeout(function(){
+			  	$("#loading_text").html("...Learning from your Google Calendar")
+			  	setTimeout(function(){
+					$("#loading_text").html("...Talking to your mother")
+					setTimeout(function(){
+						window.location.href = "https://www.messenger.com/t/jarvisbot/";
+					}, 1000);
+				}, 1000);
+			}, 1000);
+		}, 1000);
+		
+		
+
+	});
+	
+});
+
+</script>
 </html>
