@@ -57,10 +57,9 @@ def dashboard(facebook_id=None):
     if user.google_credentials is not None:
         google_cal_connected_flag = True
 
-    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag)
+    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag, google_cal_connected_flag=google_cal_connected_flag)
 
-@app.route("/lyft_request_ride/<facebook_id>")
-def lyft_request_ride(facebook_id=None):
+def lyft_request_ride(facebook_id):
     # Determine what time of day it is
     current_datetime = datetime.datetime.now()
     if current_datetime.hour > 4 and current_datetime.hour < 12:
@@ -100,7 +99,7 @@ def lyft_request_ride(facebook_id=None):
 
 @app.route("/lyft_auth_redirect")
 def lyft_auth():
-    facebook_id = session['fbid']
+    facebook_id = request.args.get('state')
     if facebook_id == None:
         return "Click in through Messenger"
     return lyft.setup(request, facebook_id)
@@ -145,9 +144,9 @@ def lyft_trigger():
 # This mesasge sends a Lyft deeplink CTA to a recipient through messenger
 def send_lyft_cta(facebook_id):
     buttonsList = [{
-        "type" : "web_url",
-        "url" : "http://jarvis-chatbot.herokuapp.com/lyft_request_ride/" + facebook_id,
-        "title" : "Get a Lyft to Work"
+        "type" : "postback",
+        "payload" : "" + facebook_id,
+        "title" : "Get me a Lyft home"
     }]
     sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
 
@@ -217,7 +216,7 @@ def receivedMessage(event):
 
     if 'text' in message:
         # sendTextMessage(facebook_id, "Text received.")
-        text = message["text"]
+        text = message["text"].lower()
 
         if 'ping' in text:
              sendTextMessage(facebook_id, "pong")
@@ -287,7 +286,8 @@ def receivedMessage(event):
         elif 'SOS' in text or 'sos' in text:
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
-
+        elif 'lyft' in text:
+            lyft_request_ride(facebook_id)
         else:
             sendTextMessage(facebook_id, "Sorry, I don't understand! Type "
                                              "SOS for help.")
