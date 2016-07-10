@@ -78,3 +78,30 @@ def get_events_today(facebook_id):
         output.append(event['summary'])
     return ", ".join(output)
     
+# summary: String, location: String, start_time: datetime string, emails: [String]
+def create_event(summary, location, start_time, end_time, emails):
+    user = User.query.get(facebook_id)
+    if not user or not user.google_credentials:
+        return "Permission denied. Please OAuth for Google Calendar."
+    credentials = client.OAuth2Credentials.from_json(json.loads(user.google_credentials))
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar', 'v3', http=http)
+    
+    attendees = []
+    for email in emails:
+        attendees.append({
+            'email': email
+        })
+    event = {
+        'summary': summary,
+        'location': location,
+        'start': {
+            'dateTime': start_time
+        },
+        'end': {
+            'dateTime': end_time
+        },
+        'attendees': attendees
+    }
+
+    created_event = service.events().insert(calendarId='primary', body=event).execute()
