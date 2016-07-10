@@ -288,6 +288,7 @@ def receivedMessage(event):
 
         elif 'gym' in text or 'grocery' in text:
             response = google_cal.get_free_time(facebook_id, 3600, None, None)
+            print response
             free_time = "You have " + len(response) + " times today that you " \
                                                       "could go: "
             sendTextMessage(facebook_id, free_time)
