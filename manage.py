@@ -1,5 +1,5 @@
 from database import db
-from app.models import User
+from app.models import User, Event
 import app
 from flask import Flask, request, render_template, session, url_for
 from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare, google_maps
@@ -27,6 +27,7 @@ manager.add_command('db', MigrateCommand)
 # *****************************************************************************
 # WEBAPP ROUTES
 # *****************************************************************************
+
 
 @app.route("/")
 @app.route("/<facebook_id>")
@@ -58,6 +59,12 @@ def dashboard(facebook_id=None):
         google_cal_connected_flag = True
 
     return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag, google_cal_connected_flag=google_cal_connected_flag)
+
+@app.route("/scheduler/<facebook_id>")
+def scheduler(facebook_id=None):
+    events = Event.query.filter_by(facebook_id=facebook_id).all()
+
+    return render_template('scheduler.html', facebook_id=facebook_id, events=events)
 
 def lyft_request_ride(facebook_id):
     # Determine what time of day it is
