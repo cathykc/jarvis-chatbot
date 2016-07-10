@@ -191,6 +191,12 @@ def scheduler_trigger(event_id=None):
     elif enum == 3:
         # Evening commute
         sendLyftCTA(facebook_id, False) 
+    elif enum == 4:
+        metadata = json.loads(event.metadata_json)
+        sendWalkingMessage(facebook_id, metadata)
+    elif enum == 5:
+        metadata = json.loads(event.metadata_json)
+        sendDrivingMessage(facebook_id, metadata)
     else:
         sendTextMessage(facebook_id, "wasn't handled")
 
@@ -547,40 +553,36 @@ def sendWalkingMessage(facebook_id, metadata):
         drive_id: metadata['drive_id']
     }
     buttonList = [{
-            type: "postback",
-            title: "Thanks Jarvis, I'll walk!",
-            payload: json.dumps(payload)
+            'type': "postback",
+            'title': "Thanks Jarvis, I'll walk!",
+            'payload': json.dumps(payload)
         }, {
-            type: "postback",
-            title: "I'm going to take the car instead.",
-            payload: ""
+            'type': "postback",
+            'title': "I'm going to take the car instead.",
+            'payload': ""
         }
     ]
     sendButtonMessage(
         facebook_id,
-        metadata['summary'] + " is starting soon - you should start walking now!",
+        metadata['title'] + " is starting soon - you should start walking now!",
         buttonList
     )
 
 def sendDrivingMessage(facebook_id, metadata):
-    payload = {
-        payload: "WALK",
-        drive_id: metadata['drive_id']
-    }
     buttonList = [{
-            type: "postback",
-            title: "Call me a Lyft",
-            payload: "CALL_LYFT HOME"
+            'type': "postback",
+            'title': "Call me a Lyft",
+            'payload': "CALL_LYFT HOME"
         }, {
-            type: "postback",
-            title: "I'm going to take the car instead.",
-            payload: ""
+            'type': "postback",
+            'title': "I'm going to take the car instead.",
+            'payload': ""
         }
     ]
     
     sendButtonMessage(
         facebook_id,
-        metadata['summary'] + " is starting soon - you should call a Lyft!",
+        metadata['title'] + " is starting soon - you should call a Lyft!",
         buttonList
     )
 
