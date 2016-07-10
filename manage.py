@@ -297,7 +297,7 @@ def receivedMessage(event):
             else:
                 num_time = int(time)
                 print num_time
-                parsed_time = google_cal.today_at(num_time, 0)
+                parsed_time = google_cal.today_at(num_time, 0).isoformat()
                 print parsed_time
             response = yelp_api.get_top_locations(food_type, 3, location,
                                                   parsed_time, who)
