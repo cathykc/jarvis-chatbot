@@ -248,7 +248,7 @@ def receivedMessage(event):
         elif 'weather' in text:
             sendWeather(facebook_id)
 
-        if 'test distance please' in text:
+        elif 'test distance please' in text:
             google_maps.walking_time_from_home(
                 facebook_id,
                 "1 Hacker Way",
