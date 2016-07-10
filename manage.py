@@ -256,9 +256,11 @@ def receivedMessage(event):
         elif 'remind' in text:
             print 'IN REMINDER ELIF!!!'
             user = User.query.get(facebook_id)
+            print('1')
             task = text.replace('remind me to ', '')
+            print('2')
             user.reminders = user.reminders + '$'+task
-
+            print('3')
             db.session.add(user)
             try:
                 print 'saving'
@@ -267,6 +269,7 @@ def receivedMessage(event):
                 print 'error'
                 db.session.rollback()
 
+            print 'right before sending text message'
             sendTextMessage(facebook_id, "Done - I'll remind you during your ride home tonight to " + task)
         elif 'fuck' in text or 'shit' in text or 'damn' in text:
             sendTextMessage(facebook_id, "Watch your language!")
