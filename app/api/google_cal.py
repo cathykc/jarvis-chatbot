@@ -10,13 +10,10 @@ from database import db
 from app import User
 
 def oauth(facebook_id):
-    flask.session['facebook_id'] = facebook_id 
-    # Getting credentials from flask.session
     user = User.query.get(facebook_id)
     if not user:
         return "User not found"
     print "google credentials", user.google_credentials
-    # used to be flask.session['google_credentials']
     if not user.google_credentials:
         return flask.redirect(flask.url_for('google_oauth2callback'))       
     credentials = client.OAuth2Credentials.from_json(json.loads(user.google_credentials))
@@ -37,7 +34,6 @@ def oauth2callback(facebook_id):
     else:
         auth_code = flask.request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
-        # Storing credentials in flask.session
         user = User.query.get(facebook_id)
         if not user:
             return "User not found"
@@ -47,7 +43,7 @@ def oauth2callback(facebook_id):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-        #flask.session['google_credentials'] = credentials.to_json()
+        print "Authenticated User for Google!"
         return flask.redirect(flask.url_for('dashboard', facebook_id=facebook_id))
 
 def now():

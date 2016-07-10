@@ -2,7 +2,7 @@ from database import db
 from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api
+from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare
 import json
 import requests
 import os
@@ -101,20 +101,27 @@ def lyft_request_ride(facebook_id):
 def lyft_auth():
     facebook_id = request.args.get('state')
     if facebook_id == None:
-        return "Click in through Messenger"
+        return render_template('login.html')
     return lyft.setup(request, facebook_id)
+
+@app.route("/foursquare_redirect/<facebook_id>")
+def foursquare_auth(facebook_id=None):
+    if facebook_id == None:
+        return render_template('login.html')
+    return foursquare.setup(request, facebook_id)
 
 @app.route("/google_auth/<facebook_id>")
 def google_auth(facebook_id=None):
     if facebook_id == None:
-        return "Click in through Messenger"
+        return render_template('login.html')
+    session['facebook_id'] = facebook_id
     return google_cal.oauth(facebook_id)
 
 @app.route("/google_oauth2callback")
 def google_oauth2callback():
     facebook_id = session['facebook_id']
     if facebook_id == None:
-        return "Click in through Messenger"
+        return render_template('login.html')
     return google_cal.oauth2callback(facebook_id)
 
 @app.route("/fitbit_auth")
@@ -145,7 +152,7 @@ def lyft_trigger():
 def send_lyft_cta(facebook_id):
     buttonsList = [{
         "type" : "postback",
-        "payload" : "" + facebook_id,
+        "payload" : "CALL_LYFT",
         "title" : "Get me a Lyft home"
     }]
     sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
@@ -210,8 +217,7 @@ def receivedMessage(event):
     facebook_id = event['sender']['id']
     message = event['message']
 
-    # print facebook_id
-    print "---------------------------------"
+    print "--------------------------------"
     print message
     r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
     first_name = r.json()["first_name"]
@@ -228,6 +234,16 @@ def receivedMessage(event):
         elif 'weather' in text:
             sendWeather(facebook_id)
 
+        elif 'fuck' in text or 'shit' in text or 'damn' in text:
+            sendTextMessage(facebook_id, "Watch your language!")
+
+        elif 'hey' in text or 'hi' in text:
+            sendTextMessage(facebook_id, "Hey, " + first_name + "!")
+
+        elif 'how are you' in text or 'how are you' in text or 'how\'re you' \
+                in text:
+            sendTextMessage(facebook_id, "I'm good! I hope you are, too!")
+
         elif "my events" in text:
             sendEventDigest(facebook_id)
 
@@ -240,6 +256,7 @@ def receivedMessage(event):
                 google_cal.minutes_later(datetime.now(), 60).isoformat(),
                 ["danielzh@sas.upenn.edu"]
             )
+            sendTextMessage(facebook_id, "Scheduling an event right now!")
 
         elif "event at 7" in text:
             google_cal.create_event(
@@ -250,6 +267,7 @@ def receivedMessage(event):
                 google_cal.minutes_later(google_cal.today_at(19, 0), 60).isoformat(),
                 ["danielzh@sas.upenn.edu"]
             )
+            sendTextMessage(facebook_id, "Scheduling an event at 7!")
 
         elif 'schedule' in text:
             split = text.split()
@@ -268,35 +286,39 @@ def receivedMessage(event):
 
             who = parse_query.getPerson(text)
             time = parse_query.getTime(text)
-
+            if time is None:
+                parsed_time = None
+            else:
+                num_time = int(time)
+                parsed_time = google_cal.today_at(num_time, 0).isoformat()
             response = yelp_api.get_top_locations(food_type, 3, location,
-                                                  time, who)
+                                                  parsed_time, who)
             sendTextMessage(facebook_id, "Here are the best places to get " +
                             food_type + "in " + location + ":  ")
+            sendCarouselMessage(facebook_id, response)
 
-
+        elif 'more articles' in text:
+            response = nyt_api.get_top_articles(10)
+            sendTextMessage(facebook_id, "I've added five more "
+                                           "news stories for you! ")
             sendCarouselMessage(facebook_id, response)
 
         elif 'news' in text:
-            response = nyt_api.get_top_articles()
+            response = nyt_api.get_top_articles(5)
+            sendTextMessage(facebook_id, "Here are todays five most popular "
+                                         "news stories: ")
             sendCarouselMessage(facebook_id, response)
 
         elif 'help me' in text:
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
 
-        elif 'lyft' in text:
-            print("REACHED LYFTTTTTT")
-            # Request ride
-            isMorning = lyft_request_ride(facebook_id)
-
-            if isMorning:
-                sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes!")
-            else:
-                sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
-
         elif 'hey jarvis' in text:
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
+
+        elif "what's up" in text or "whats up" in text:
+            sendTextMessage(facebook_id, "Not much! Hope you're having a "
+                                         "good day, "+first_name + "!")
 
         elif 'who am i' in text or 'whats my name' in text or "what's my " \
                                                               "name" in text:
@@ -308,9 +330,6 @@ def receivedMessage(event):
         elif 'do you have free will' in text:
             sendTextMessage(facebook_id, "Yes.")
 
-        elif 'fuck' in text or 'shit' in text or 'damn' in text:
-            sendTextMessage(facebook_id, "Watch your language!")
-
         elif 'what is your name' in text or 'who are you' in text or 'whats ' \
                                                                      'your ' \
                                                                      'name' \
@@ -320,8 +339,7 @@ def receivedMessage(event):
         else:
             sendTextMessage(facebook_id, "Sorry, I don't quite understand what "
                                          "you "
-                                         "said! Type "
-                                             "help me for help.")
+                                         "said! Type  \'help me\' for help.")
 
     elif 'attachments' in message:
         sendTextMessage(facebook_id, "Attachment received.")
@@ -358,19 +376,38 @@ def receivedPostback(event):
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
         sendCarouselMessage(facebook_id, [element])
+    elif payload == 'CALL_LYFT':
+        # Request ride
+        isMorning = lyft_request_ride(facebook_id)
 
+        if isMorning:
+            sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes! Also, check out what's going on in the world while you wait:")
+        else:
+            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes. Also, check out what's going on in the world while you wait:")
+        
+        # Send news
+        response = nyt_api.get_top_articles(5)
+        sendCarouselMessage(facebook_id, response)
+
+    # create cal event from yelp
     else:
         print payload
         parsed = json.loads(payload)
         print parsed['address']
         print parsed['title']
         if parsed['time'] is None:
-            time = google_cal.now().isoformat()
-            end_time = google_cal.minutes_later(30).isoformat()
+            print "time is none"
+            time = google_cal.now()
+            end_time = google_cal.minutes_later(time, 30).isoformat()
         else:
             time = parsed['time']
-            end_time = google_cal.minutes_later(time, 60)
+            print time
+            end_time = google_cal.minutes_later(time, 60).isoformat()
+            print end_time
+            print parsed['summary']
         if parsed['person'] is None:
+            emails = []
+        else:
             emails = []
         google_cal.create_event(facebook_id, parsed['summary'],
                                 parsed['address'], time, end_time, emails)
