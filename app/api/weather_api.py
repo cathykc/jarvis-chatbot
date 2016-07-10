@@ -7,6 +7,6 @@ def getWeatherConditions(city):
 
 	weatherObj = {}
 	weatherObj["city"] = weather["display_location"]["city"]
-	weatherObj["weather"] = weather["weather"]
+	weatherObj["weather"] = weather["weather"].lower()
 	weatherObj["temperature"] = weather["temperature_string"]
 	return weatherObj
