@@ -70,8 +70,11 @@ def dashboard(facebook_id=None):
 # Foursquare webhook 
 @app.route("/foursquare_push", methods=['GET','POST'])
 def foursquare_push():
+    print('FOURSQURE PUSH!!!')
     checkin_obj = request.args.get('checkin')
     print(checkin_obj)
+
+    return ''
 
 @app.route("/scheduler/<facebook_id>")
 def scheduler(facebook_id=None):
