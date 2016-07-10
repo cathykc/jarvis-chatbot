@@ -2,14 +2,17 @@ from database import db
 from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from app.api import google_cal, yelp_api, lyft, nyt_api, triggers
+from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api
 import json
 import requests
 import os
 import uuid
 import parse_query
+from datetime import datetime, timedelta
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+import datetime
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') if os.environ.get('DATABASE_URL') else "sqlite:////tmp/test.db"
@@ -43,48 +46,64 @@ def dashboard(facebook_id=None):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-    return render_template('dashboard.html', facebook_id=facebook_id)
 
-@app.route("/lyft_deeplink")
-def lyft_deeplink():
+    # Check if lyft is connected
+    lyft_connected_flag = False
+    if user.lyft_access_token is not None:
+        lyft_connected_flag = True
+
+    # Check if google cal is connected
+    google_cal_connected_flag = False
+    if user.google_credentials is not None:
+        google_cal_connected_flag = True
+
+    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag)
+
+@app.route("/lyft_request_ride/<facebook_id>")
+def lyft_request_ride(facebook_id=None):
     # Determine what time of day it is
-    isMorning = True
+    current_datetime = datetime.datetime.now()
+    if current_datetime.hour > 4 and current_datetime.hour < 12:
+        isMorning = True
+    else:
+        isMorning = False
 
-    # Get the user id
+        # Get the user
+    user = User.query.get(facebook_id)
+    if not user:
+        return False
 
     # Determine pickup and dropoff based on home, work, and isMorning flag
     rideType = 'lyft_line'
-    # if isMorning:
-    #     # Retrieve work as destination
-    # else:
-    #     # Retrieve home as destination
 
-    # temp
-    dropoffLat = 37.75593
-    dropoffLong = -122.41091
+    if isMorning:
+         # Retrieve work as destination
+         pickupLat = user.lyft_home_lat
+         pickupLong = user.lyft_home_long
+         dropoffLat = user.lyft_work_lat
+         dropoffLong = user.lyft_work_long
+    else:
+         # Retrieve home as destination
+         pickupLat = user.lyft_work_lat
+         pickupLong = user.lyft_work_long
+         dropoffLat = user.lyft_home_lat
+         dropoffLong = user.lyft_home_long
 
-    return render_template('lyft_deeplink.html', rideType=rideType, dropoffLat=dropoffLat, dropoffLong=dropoffLong)
+    access_token = user.lyft_access_token
+    refresh_token = user.lyft_refresh_token
+
+    # Request ride
+    lyft.request_ride(access_token, refresh_token, pickupLat, pickupLong, dropoffLat, dropoffLong, rideType)
+
+    return "Requested a ride!"
     
 
 @app.route("/lyft_auth_redirect")
 def lyft_auth():
-    # auth lyft
-    (access_token, refresh_token) = lyft.authorize(request)
-
-    # Get signal
-    (go_home_time,
-            home_address,
-            home_lat,
-            home_long,
-            go_to_work_time,
-            work_address,
-            work_lat,
-            work_long) = lyft.analyze(access_token, refresh_token)
-
-    # Store access_token and refresh_token in db
-    fbid = session['fbid']
-
-    return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
+    facebook_id = session['fbid']
+    if facebook_id == None:
+        return "Click in through Messenger"
+    return lyft.setup(request, facebook_id)
 
 @app.route("/google_auth/<facebook_id>")
 def google_auth(facebook_id=None):
@@ -120,9 +139,17 @@ def message_test(facebook_id=None, message=""):
 @app.route("/lyft_trigger")
 def lyft_trigger():
     facebook_id = request.args.get('facebook_id')
+    send_lyft_cta(facebook_id)    
+    return "dd"
 
-    triggers.send_lyft_cta(facebook_id)    
-    return ""
+# This mesasge sends a Lyft deeplink CTA to a recipient through messenger
+def send_lyft_cta(facebook_id):
+    buttonsList = [{
+        "type" : "web_url",
+        "url" : "http://jarvis-chatbot.herokuapp.com/lyft_request_ride/" + facebook_id,
+        "title" : "Get a Lyft to Work"
+    }]
+    sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
 
 
 # *****************************************************************************
@@ -185,6 +212,8 @@ def receivedMessage(event):
 
     print facebook_id
     print message
+    r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
+    first_name = r.json()["first_name"]
 
     if 'text' in message:
         # sendTextMessage(facebook_id, "Text received.")
@@ -193,10 +222,28 @@ def receivedMessage(event):
         if 'ping' in text:
              sendTextMessage(facebook_id, "pong")
 
+        elif 'weather' in text:
+            print "WEAETHER WETHER WEATHER"
+            # TO DO : check if morning - hardcode morning for now
+            # currently hard-coded (ideally get from lyft addrress)
+            weather = weather_api.getWeatherConditions("San Francisco")
+            sendTextMessage(facebook_id, "Good morning {}! Today in {} it is {} with a temperature of {}.".format(first_name, weather["city"], weather["weather"], weather["temperature"]))
+
+
+
         elif "my events" in text:
             sendTextMessage(facebook_id, google_cal.get_events_today(facebook_id))
 
-        # Schedule coffee in Mission with Mom
+        elif "event right now" in text:
+            google_cal.create_event(
+                facebook_id, 
+                "Test Event",
+                "1 Hacker Way",
+                google_cal.now(),
+                google_cal.minutes_later(60),
+                ["danielzh@sas.upenn.edu"]
+            )
+
         elif 'schedule' in text:
             split = text.split()
             location = parse_query.getPlace(text)
@@ -207,16 +254,20 @@ def receivedMessage(event):
                                           "San Francisco")
                 return
             elif location is None:
-                sendTextMessage(facebook_id, "Where do you want to get" +
+                sendTextMessage(facebook_id, "Where do you want " +
                                 food_type + "? Try saying: 'schedule " +
                                 food_type + " in San Francisco' ")
                 return
-            response = yelp_api.get_top_locations(food_type, 3, location)
+
+            who = parse_query.getPerson(text)
+            time = parse_query.getTime(text)
+
+            response = yelp_api.get_top_locations(food_type, 3, location,
+                                                  time, who)
             sendTextMessage(facebook_id, "Here are the best places to get " +
                             food_type + "in " + location + ":  ")
 
-            with_who = parse_query.getPerson(text)
-            what_time = parse_query.getTime(text)
+
             sendCarouselMessage(facebook_id, response)
 
         # nyt
@@ -267,8 +318,12 @@ def receivedPostback(event):
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
         sendCarouselMessage(facebook_id, [element])
-    else:   
-        sendTextMessage(facebook_id, "Postback called.")
+
+    else:
+        print payload
+        print "THE FOLLOWING IS THE PARSED JSON"
+        print json.parse(payload)['address']
+        sendTextMessage(facebook_id, "Putting this event into your calendar!")
 
 
 # *****************************************************************************
