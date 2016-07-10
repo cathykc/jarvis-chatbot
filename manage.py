@@ -291,16 +291,9 @@ def receivedMessage(event):
             sendWeather(facebook_id)
 
         elif 'gym' in text or 'grocery' in text:
-            response = google_cal.get_free_time(facebook_id, 3600, None, None)
-            print response
-            free_time = "You have " + len(response) + " times today that you " \
-                                                      "could go: "
-            sendTextMessage(facebook_id, free_time)
-            times = ""
-            for r in response:
-                times += str(r[0]) + " to " + str(r[1])
-            print times
-            sendTextMessage(facebook_id, times)
+            # response = google_cal.get_free_time(facebook_id, 3600, None, None)
+            sendFreeTimeMessage(first_name, "gym", facebook_id, 3600, None,
+                                None)
 
         elif 'test distance please' in text:
             google_maps.walking_time_from_home(
@@ -354,9 +347,10 @@ def receivedMessage(event):
             )
             sendTextMessage(facebook_id, "Scheduling an event right now!")
 
-        elif "get free time for gym" in text:
+       # elif "get free time for gym" in text:
             # any time today for an hour
-            sendFreeTimeMessage(first_name, "gym", facebook_id, 3600, None, None)
+       #     sendFreeTimeMessage(first_name, "gym", facebook_id, 3600, None,
+       # None)
 
         elif "event at 7" in text:
             google_cal.create_event(
