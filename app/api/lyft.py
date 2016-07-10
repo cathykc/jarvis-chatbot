@@ -1,7 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
-from app import User
+from app import User, Event
 from database import db
 from sqlalchemy.exc import IntegrityError
 from flask import session, redirect
@@ -35,11 +35,73 @@ def setup(request, facebook_id):
             work_lat,
             work_long, facebook_id)
 
+    # Schedule lyft related events
+    schedule_morning_info_card(go_to_work_time, facebook_id)
+    schedule_morning_lyft(go_to_work_time, facebook_id)
+    schedule_afternoon_lyft(go_home_time, facebook_id)
+
     # Redirect to dashboard
     redirect_url = "/" + facebook_id
     return redirect(redirect_url)
 
     # return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
+
+# Schedule the morning info card
+def schedule_morning_info_card(go_to_work_time, facebook_id):
+    event = Event(facebook_id=facebook_id)
+
+    # Create datetime out of go_to_work_time
+    morning_info_card_time = datetime.now()
+    print 'current_time'
+    print morning_info_card_time.hour
+    morning_info_card_time.replace(hour=8)
+
+    event.send_timestamp = morning_info_card_time
+    event.trigger_enum = 1
+
+    db.session.add(event)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return false
+    return True
+
+def schedule_morning_lyft(go_to_work_time, facebook_id):
+    event = Event(facebook_id=facebook_id)
+
+    # Create datetime out of go_to_work_time
+    morning_info_card_time = datetime.now()
+    morning_info_card_time = morning_info_card_time + datetime.timedelta(minutes=-30)
+
+    event.send_timestamp = morning_info_card_time
+    event.trigger_enum = 2
+
+    db.session.add(event)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return false
+    return True
+
+def schedule_afternoon_lyft(go_home_time, facebook_id):
+    event = Event(facebook_id=facebook_id)
+
+    # Create datetime out of go_to_work_time
+    afternoon_info_card_time = datetime.now()
+    afternoon_info_card_time = afternoon_info_card_time + datetime.timedelta(minutes=-30)
+
+    event.send_timestamp = afternoon_info_card_time
+    event.trigger_enum = 3
+
+    db.session.add(event)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return false
+    return True    
 
 # Store signal retrieved into database
 def store_signal_in_database(access_token, 
