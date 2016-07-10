@@ -582,6 +582,7 @@ def sendEventDigest(facebook_id):
 
 def scheduleCalReminderEvent(event, facebook_id):
     print "scheduling cal reminder events"
+    print event
     if 'location' not in event:
         return
     driving_time_in_sec = google_maps.driving_time_from_work(facebook_id, event['location'])['value']
