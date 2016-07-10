@@ -137,6 +137,7 @@ def create_event(facebook_id, summary, location, start_time, end_time, emails):
         },
         'attendees': attendees
     }
+    print event
 
     created_event = service.events().insert(calendarId='primary', body=event).execute()
     return True
