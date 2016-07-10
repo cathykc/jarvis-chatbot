@@ -15,17 +15,22 @@
 		<div class="row">
 			<div class="col-4">
 				<a href="https://www.lyft.com/oauth/authorize?client_id=rFR4L19xgF5R&response_type=code&scope=public rides.read offline rides.request&state=0">
-					<div class="auth_card" id="lyft_card"></div>
 					{% if lyft_connected_flag %}
+					<div class="auth_card authorized" id="lyft_card"></div>
 					<div class="check"></div>
+					{% else %}
+					<div class="auth_card" id="lyft_card"></div>
 					{% endif %}
 				</a>
 			</div>
 			<div class="col-4">
 				<a href={{ "/google_auth/" + facebook_id }}>
-					<div class="auth_card" id="google_card"></div>
+					
 					{% if google_cal_connected_flag %}
+					<div class="auth_card authorized" id="google_card"></div>
 					<div class="check"></div>
+					{% else %}
+					<div class="auth_card" id="google_card"></div>
 					{% endif %}
 				</a>
 			</div>
