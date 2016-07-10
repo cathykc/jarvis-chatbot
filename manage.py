@@ -223,7 +223,6 @@ def receivedMessage(event):
              sendTextMessage(facebook_id, "pong")
 
         elif 'weather' in text:
-            print "WEAETHER WETHER WEATHER"
             # TO DO : check if morning - hardcode morning for now
             # currently hard-coded (ideally get from lyft addrress)
             weather = weather_api.getWeatherConditions("San Francisco")
