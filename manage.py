@@ -213,7 +213,7 @@ def receivedMessage(event):
                 return
             response = yelp_api.get_top_locations(food_type, 3, location)
             sendTextMessage(facebook_id, "Here are the best places to get " +
-                            food_type + " in " + location + ":  ")
+                            food_type + "in " + location + ":  ")
 
             with_who = parse_query.getPerson(text)
             what_time = parse_query.getTime(text)
@@ -224,7 +224,7 @@ def receivedMessage(event):
             response = nyt_api.get_top_articles()
             sendCarouselMessage(facebook_id, response)
 
-        elif 'SOS' or 'sos' in text:
+        elif 'SOS' in text or 'sos' in text:
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
 
