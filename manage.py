@@ -108,6 +108,7 @@ def lyft_auth():
 def google_auth(facebook_id=None):
     if facebook_id == None:
         return "Click in through Messenger"
+    session['facebook_id'] = facebook_id
     return google_cal.oauth(facebook_id)
 
 @app.route("/google_oauth2callback")
