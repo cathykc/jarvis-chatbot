@@ -1,5 +1,7 @@
 click==6.6
 Flask==0.11.1
+Flask-Migrate==1.8.0
+Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
 google-api-python-client==1.5.1
 gunicorn==19.6.0
@@ -8,6 +10,7 @@ itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
 oauth2client==2.2.0
+psycopg2==2.6.2
 pyasn1==0.1.9
 pyasn1-modules==0.0.8
 pytz==2016.4

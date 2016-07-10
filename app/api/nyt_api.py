@@ -9,6 +9,7 @@ def get_top_articles():
     r = requests.get(url)
 
     for i in range(0, 5):
+        print "success"
         image_url = r.json()['results'][i]['media'][0]['media-metadata'][0]['url']
         abstract = r.json()['results'][i]['abstract']
         article = {}

@@ -1,5 +1,5 @@
 body {
-	padding-top: 10%;
+	padding-top: 5%;
 }
 
 .container {
@@ -44,37 +44,63 @@ body {
 	border: 3px solid #EEE;
 	border-radius: 20px;
 	margin: 20px;
+	margin-bottom: 0px;
 	width: 200px;
 	height: 200px;
 }
-.auth_card:hover {
+.auth_card:hover, .authorized {
 	opacity: 0.4;
+}
+
+.authorized {
+	border: 3px solid #33CF43;
 }
 
 #lyft_card {
 	background: url("http://res.cloudinary.com/goodsearch/image/upload/v1419835891/hi_resolution_merchant_logos/lyft_coupons.png");
-	background-size: cover;
+	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 #google_card {
 	background: url("https://62e528761d0685343e1c-f3d1b99a743ffa4142d9d7f1978d9686.ssl.cf2.rackcdn.com/files/93616/area14mp/image-20150902-6700-t2axrz.jpg");
-	background-size: cover;
+	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 #fitbit_card {
 	background: url("https://index.tnwcdn.com/images/620ea20d3096ff399a780bd927dedd0bd2893435.png");
-	background-size: cover;
+	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 #venmo_card {
 	background: url("http://brand.venmo.com/assets/venmo_logo_blue.svg");
-	background-size: cover;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#yelp_card {
+	background: url("http://s3-media2.fl.yelpcdn.com/assets/srv0/www_pages/95212dafe621/assets/img/brand_guidelines/yelp-2c.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#weather_card {
+	background: url("https://icons.wxug.com/logos/PNG/wundergroundLogo_4c_rev.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#news_card {
+	background: url("https://upload.wikimedia.org/wikipedia/commons/4/40/New_York_Times_logo_variation.jpg");
+	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 }
@@ -90,5 +116,21 @@ body {
 	text-align: center;
 	text-transform: uppercase;
 	margin: 30px;
+	margin-top: 100px;
+}
+
+.check {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 50px;
+	margin-bottom: 0px;
+	width: 150px;
+	height: 150px;
+	background: url("http://www.clker.com/cliparts/u/e/E/I/2/i/dark-green-check-mark-hi.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	opacity: 0.7;
 }
 

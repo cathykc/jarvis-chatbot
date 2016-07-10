@@ -1,17 +1,25 @@
 from database import db
-from models import User
+from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from api import google_cal, yelp_api, lyft, nyt_api, triggers
+from app.api import google_cal, yelp_api, lyft, nyt_api, triggers
 import json
 import requests
 import os
 import uuid
+import parse_query
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') if os.environ.get('DATABASE_URL') else "sqlite:////tmp/test.db"
 db.init_app(app)
 app.secret_key = str(uuid.uuid4())
+
+migrate = Migrate(app, db)
+manager = Manager(app)
+
+manager.add_command('db', MigrateCommand)
 
 # *****************************************************************************
 # WEBAPP ROUTES
@@ -20,6 +28,9 @@ app.secret_key = str(uuid.uuid4())
 @app.route("/")
 @app.route("/<facebook_id>")
 def dashboard(facebook_id=None):
+    # I have never done something so hacky in my life @cathy
+    if facebook_id == 'favicon.ico':
+        return ""
     if facebook_id == None:
         return render_template('login.html')
     session['fbid'] = facebook_id
@@ -188,21 +199,39 @@ def receivedMessage(event):
         # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
             split = text.split()
-            location = split[3]
-            food_type = split[1]
+            location = parse_query.getPlace(text)
+            food_type = parse_query.getFood(text)
+            if food_type is None:
+                sendTextMessage(facebook_id, "Tell me what type of food you want to "
+                                          "schedule! Ex: 'scheudle coffee in "
+                                          "San Francisco")
+                return
+            elif location is None:
+                sendTextMessage(facebook_id, "Where do you want to get" +
+                                food_type + "? Try saying: 'schedule " +
+                                food_type + " in San Francisco' ")
+                return
             response = yelp_api.get_top_locations(food_type, 3, location)
             sendTextMessage(facebook_id, "Here are the best places to get " +
-                            food_type + " in " + location + ":  ")
+                            food_type + "in " + location + ":  ")
+
+            with_who = parse_query.getPerson(text)
+            what_time = parse_query.getTime(text)
             sendCarouselMessage(facebook_id, response)
 
         # nyt
         elif 'nyt' in text:
             response = nyt_api.get_top_articles()
-            sendTextMessage(facebook_id, "Here are the most popular articles "
-                                      "today: ")
             sendCarouselMessage(facebook_id, response)
+
+        elif 'SOS' in text or 'sos' in text:
+            help = "Try asking me to do the following commands: "
+            sendTextMessage(facebook_id, help)
+
         else:
-            sendTextMessage(facebook_id, "catch all response")
+            sendCarouselMessage(facebook_id
+                                , "Sorry, I don't understand! Type "
+                                          "SOS for help.")
 
     elif 'attachments' in message:
         sendTextMessage(facebook_id, "Attachment received.")
@@ -348,14 +377,17 @@ def callSendAPI(messageData):
     else:
         print "Unable to send message."
 
+@manager.command
 def setup_db():
     with app.app_context():
+    # print app
         db.drop_all()
         db.create_all()
         db.session.commit()
+    print "database is set up!"
 
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run()
+    manager.run()
