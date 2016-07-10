@@ -376,12 +376,13 @@ def callSendAPI(messageData):
     else:
         print "Unable to send message."
 
+@manager.command
 def setup_db():
-    # with app.app_context():
+    with app.app_context():
     # print app
-    db.drop_all()
-    db.create_all()
-    db.session.commit()
+        db.drop_all()
+        db.create_all()
+        db.session.commit()
     print "database is set up!"
 
 
