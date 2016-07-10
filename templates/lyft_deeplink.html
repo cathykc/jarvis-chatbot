@@ -10,7 +10,10 @@
                 var dropoffLat = {{ dropoffLat }};
                 var dropoffLong = {{ dropoffLong }};
 
-                window.location.href = 'lyft://ridetype?id='+rideType+'&destination[latitude]='+dropoffLat+'&destination[longitude]='+dropoffLong;
+                var deeplinkUrl = 'lyft://ridetype?id='+rideType+'&destination[latitude]='+dropoffLat+'&destination[longitude]='+dropoffLong;
+                // alert(deeplinkUrl);
+
+                window.location.href = deeplinkUrl;
             });
         </script>
     </body>

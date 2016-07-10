@@ -110,7 +110,7 @@ def lyft_trigger():
     recipientId = request.args.get('recipientId')
     buttonsList = [{
         "type" : "web_url",
-        "url" : "http://jarvis-chatbot.herokupapp.com/lyft_deeplink",
+        "url" : "http://jarvis-chatbot.herokuapp.com/lyft_deeplink",
         "title" : "Get a Lyft to Work"
     }]
     sendButtonMessage(recipientId, 'Need a ride to work?', buttonsList)
