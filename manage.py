@@ -277,8 +277,7 @@ def receivedMessage(event):
         elif 'test distance please' in text:
             google_maps.walking_time_from_home(
                 facebook_id,
-                "1 Hacker Way",
-                google_cal.today_at(19, 0)
+                "1 Hacker Way"
             )
         elif 'remind' in text:
             print 'IN REMINDER ELIF!!!'
@@ -610,22 +609,39 @@ def sendEventDigest(facebook_id):
                     "\n".join(events_formatted))
 
 def scheduleCalReminderEvent(event, facebook_id):
+    if 'location' not in event:
+        return
+    driving_time_in_sec = google_maps.driving_time_from_work(facebook_id, event['location'])['value']
+    walking_time_in_sec = google_maps.walking_time_from_work(facebook_id, event['location'])['value']
+    event_start_time = datetime.strptime(event['start_time'], "%I:%M %p")
+    event_start_time = datetime(today.year, today.month, today.day, next_start_time.hour, next_start_time.minute, 0)
+    driving_alert_time = event_start_time - timedelta(seconds=driving_time_in_sec)
+    walking_alert_time = event_start_time - timedelta(seconds=walking_time_in_sec)
 
-    min_before = 30
-    cal_datetime = datetime.now()
-    cal_datetime = cal_datetime + timedelta(minutes=-min_before)
+    driving_event = Event(
+        facebook_id=facebook_id,
+        trigger_enum=5,
+        send_timestamp=driving_alert_time,
+        metadata_json=event
+    )
 
-    event = Event(facebook_id=facebook_id)
+    walking_metadata = event.copy()
+    walking_metadata['drive_id'] = driving_event.id
 
-    event.send_timestamp = cal_datetime
-    event.trigger_enum = 4
+    walking_event = Event(
+        facebook_id=facebook_id,
+        trigger_enum=4,
+        send_timestamp=walking_alert_time,
+        metadata_json=walking_metadata
+    )
 
-    db.session.add(event)
+    db.session.add(driving_event)
+    db.session.add(walking_event)
     try:
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return false
+        return False
     return True
 
 # This mesasge sends a Lyft deeplink CTA to a recipient through messenger
