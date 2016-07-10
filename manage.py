@@ -8,10 +8,9 @@ import requests
 import os
 import uuid
 import parse_query
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-import datetime
 
 
 app = Flask(__name__)
@@ -510,13 +509,32 @@ def sendEventDigest(facebook_id):
     events_formatted = []
     for event in events:
         events_formatted.append(event["start_time"] + ": " + event["title"])
-        #scheduleWalkingEvent(event)
-        #scheduleDrivingEvent(event)
+        
+        scheduleCalReminderEvent(event, facebook_id)
 
 
     busy = am_i_busy(len(events))
     sendTextMessage(facebook_id, busy + "Here's what you're doing today:\n\n"+
                     "\n".join(events_formatted))
+
+def scheduleCalReminderEvent(event, facebook_id):
+
+    min_before = 30
+    cal_datetime = datetime.now()
+    cal_datetime = cal_datetime + timedelta(minutes=-min_before)
+
+    event = Event(facebook_id=facebook_id)
+
+    event.send_timestamp = cal_datetime
+    event.trigger_enum = 4
+
+    db.session.add(event)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return false
+    return True
 
 # This mesasge sends a Lyft deeplink CTA to a recipient through messenger
 def sendLyftCTA(facebook_id, isMorning):
