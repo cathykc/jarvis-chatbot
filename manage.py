@@ -334,6 +334,16 @@ def receivedPostback(event):
         parsed = json.loads(payload)
         print parsed['address']
         print parsed['title']
+        if parsed['time'] is None:
+            time = google_cal.now().isoformat()
+            end_time = google_cal.minutes_later(30).isoformat()
+        else:
+            time = parsed['time']
+            end_time = google_cal.minutes_later(time, 60)
+        if parsed['person'] is None:
+            emails = []
+        google_cal.create_event(facebook_id, parsed['summary'],
+                                parsed['address'], time, end_time, emails)
         sendTextMessage(facebook_id, "Putting this event into your calendar!")
 
 
