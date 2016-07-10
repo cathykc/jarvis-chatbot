@@ -257,12 +257,14 @@ def receivedMessage(event):
             print 'IN REMINDER ELIF!!!'
             user = User.query.get(facebook_id)
             task = text.replace('remind me to ', '')
-            user.reminders += '$'+task
+            user.reminders = user.reminders + '$'+task
 
             db.session.add(user)
             try:
+                print 'saving'
                 db.session.commit()
             except IntegrityError:
+                print 'error'
                 db.session.rollback()
 
             sendTextMessage(facebook_id, "Done - I'll remind you during your ride home tonight to " + task)
