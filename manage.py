@@ -288,7 +288,17 @@ def receivedMessage(event):
             sendMorningCard(facebook_id)
 
         elif 'weather' in text:
-            sendWeather(facebook_id) 
+            sendWeather(facebook_id)
+
+        elif 'gym' in text or 'grocery' in text:
+            response = google_cal.get_free_time(facebook_id, 3600, None, None)
+            free_time = "You have " + len(response) + " times today that you " \
+                                                      "could go: "
+            sendTextMessage(facebook_id, free_time)
+            times = ""
+            for r in response:
+                times += r[0] + " to " + r[1]
+            sendTextMessage(facebook_id, times)
 
         elif 'test distance please' in text:
             google_maps.walking_time_from_home(
