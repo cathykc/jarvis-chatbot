@@ -217,8 +217,7 @@ def receivedMessage(event):
     facebook_id = event['sender']['id']
     message = event['message']
 
-    # print facebook_id
-    print "---------------------------------"
+    print "--------------------------------"
     print message
     r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
     first_name = r.json()["first_name"]
