@@ -263,6 +263,7 @@ def receivedMessage(event):
                 google_cal.minutes_later(datetime.now(), 60).isoformat(),
                 ["danielzh@sas.upenn.edu"]
             )
+            sendTextMessage(facebook_id, "Scheduling an event right now!")
 
         elif "event at 7" in text:
             google_cal.create_event(
@@ -273,6 +274,7 @@ def receivedMessage(event):
                 google_cal.minutes_later(google_cal.today_at(19, 0), 60).isoformat(),
                 ["danielzh@sas.upenn.edu"]
             )
+            sendTextMessage(facebook_id, "Scheduling an event at 7!")
 
         elif 'schedule' in text:
             split = text.split()
@@ -291,9 +293,11 @@ def receivedMessage(event):
 
             who = parse_query.getPerson(text)
             time = parse_query.getTime(text)
-
+            # parse the int
+            num_time = int(time)
+            parsed_time = google_cal.today_at(time, 0)
             response = yelp_api.get_top_locations(food_type, 3, location,
-                                                  time, who)
+                                                  parsed_time, who)
             sendTextMessage(facebook_id, "Here are the best places to get " +
                             food_type + "in " + location + ":  ")
 
@@ -398,11 +402,11 @@ def receivedPostback(event):
         print parsed['address']
         print parsed['title']
         if parsed['time'] is None:
-            time = google_cal.now().isoformat()
-            end_time = google_cal.minutes_later(30).isoformat()
+            time = google_cal.now()
+            end_time = google_cal.minutes_later(time, 30).isoformat()
         else:
             time = parsed['time']
-            end_time = google_cal.minutes_later(time, 60)
+            end_time = google_cal.minutes_later(time, 60).isoformat()
         if parsed['person'] is None:
             emails = []
         google_cal.create_event(facebook_id, parsed['summary'],
