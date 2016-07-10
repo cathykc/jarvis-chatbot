@@ -1,6 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
+from models import * 
 
 # *****************************************************************************
 #  LYFT SETUP / AUTH FUNCTIONS
