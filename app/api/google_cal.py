@@ -29,7 +29,6 @@ def oauth2callback(facebook_id):
         'google_client_secrets.json',
         scope='https://www.googleapis.com/auth/calendar',
         redirect_uri=flask.url_for('google_oauth2callback', _external=True))
-    flow.params['state'] = facebook_id
     if 'code' not in flask.request.args:
         auth_uri = flow.step1_get_authorize_url()
         if 'redirect_uri=https' in auth_uri:
