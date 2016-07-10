@@ -173,7 +173,7 @@ def scheduler_trigger(event_id=None):
         sendDrivingMessage(facebook_id, metadata)
     else:
         sendTextMessage(facebook_id, "wasn't handled")
-        
+
     db.session.delete(event)
     try:
         db.session.commit()
@@ -527,7 +527,7 @@ def sendWalkingMessage(facebook_id, metadata):
         }, {
             'type': "postback",
             'title': "I'm going to take the car instead.",
-            'payload': ""
+            'payload': "noop"
         }
     ]
     sendButtonMessage(
