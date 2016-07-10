@@ -13,6 +13,7 @@ class Event(db.Model):
     # 3 - afternoon lyft
     # 4 - walking reminder
     # 5 - driving reminder
+    # 6 - ice cream fouresquare
  
     def __init__(self, facebook_id):
         self.facebook_id = facebook_id

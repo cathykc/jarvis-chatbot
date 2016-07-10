@@ -70,18 +70,15 @@ def dashboard(facebook_id=None):
 # Foursquare webhook 
 @app.route("/foursquare_push", methods=['GET','POST'])
 def foursquare_push():
-    print('FOURSQURE PUSH!!!')
-    checkin_obj = request.args.get('checkin')
-    print(checkin_obj)
-    print(request.args)
-    print('hello')
-    print(request)
-    print(request.values)
-    print(request.values.get('checkin'))
-    print(request.form)
-    print(request.form.get('checkin'))
+    checkin_obj = request.form.get('checkin')
 
-    data = json.loads(request.data)
+    venue_name = checkin_obj['venue']['name']
+    venue_city = checkin_obj['venue']['city']
+
+    # Schedule a notification for ice cream in 1 hour
+    
+
+    
     print(data)
 
     return ''
@@ -462,7 +459,7 @@ def receivedPostback(event):
         # Request ride
         print "CALLING LYFT HERE"
         isMorning = ("work" in payload)
-        # lyft_request_ride(facebook_id, isMorning)
+        lyft_request_ride(facebook_id, isMorning)
 
         if isMorning:
             print 'MORNING'
