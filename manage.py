@@ -271,8 +271,10 @@ def receivedPostback(event):
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
         sendCarouselMessage(facebook_id, [element])
-    else:   
-        sendTextMessage(facebook_id, "Postback called.")
+
+    else:
+        print payload
+        sendTextMessage(facebook_id, payload)
 
 
 # *****************************************************************************
