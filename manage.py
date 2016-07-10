@@ -568,6 +568,7 @@ def sendWeather(facebook_id):
 
 def sendEventDigest(facebook_id):
     events = google_cal.get_events_today(facebook_id)
+    print "sendEventDigest", events
     # also schedules all the async messages
     events_formatted = []
     for event in events:
@@ -585,6 +586,7 @@ def scheduleCalReminderEvent(event, facebook_id):
     print event
     if 'location' not in event:
         return
+    today = datetime.today()
     driving_time_in_sec = google_maps.driving_time_from_work(facebook_id, event['location'])['value']
     walking_time_in_sec = google_maps.walking_time_from_work(facebook_id, event['location'])['value']
     event_start_time = datetime.strptime(event['start_time'], "%I:%M %p")
