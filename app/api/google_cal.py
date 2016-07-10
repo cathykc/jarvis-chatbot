@@ -31,6 +31,8 @@ def oauth2callback(facebook_id):
     flow.params['state'] = facebook_id
     if 'code' not in flask.request.args:
         auth_uri = flow.step1_get_authorize_url()
+        if 'redirect_uri=https' in auth_uri:
+            auth_uri.replace('redirect_uri=https', 'redirect_uri=http')
         return flask.redirect(auth_uri)
     else:
         auth_code = flask.request.args.get('code')
@@ -91,11 +93,18 @@ def get_events_today(facebook_id):
     else:
         for event in events:
             start = event['start'].get('dateTime', event['start'].get('date'))
-            print start, event['summary']
+            print event
+            print event['end']
+            end = event['end'].get('dateTime', event['end'].get('date'))
 
             start = datetime.strptime(start.split("T")[1].split("-")[0], "%H:%M:%S")
+            end = datetime.strptime(end.split("T")[1].split("-")[0], "%H:%M:%S")
 
-            eventObj = {"start_time":start.strftime("%I:%M %p"), "title":event["summary"]}
+            eventObj = {
+                "start_time": start.strftime("%I:%M %p"), 
+                "end_time": end.strftime("%I:%M %p"),
+                "title": event["summary"]
+            }
             output.append(eventObj)
     return output
     
@@ -130,3 +139,18 @@ def create_event(facebook_id, summary, location, start_time, end_time, emails):
 
     created_event = service.events().insert(calendarId='primary', body=event).execute()
     return True
+
+def get_free_time(facebook_id, interval_length_in_sec, start_time, end_time, events):
+    now = datetime.now()
+    if start_time is None:
+        start_time = now
+    today = datetime.today()
+    start_of_today = datetime(today.year, today.month, today.day)
+    end_of_today = start_of_today + timedelta(days=1) # Timezone difference
+    if end_time is None:
+        end_time = end_of_today
+
+    if events is None or len(events) == 0:
+        return [(now, end_of_today)]
+    start_time = events
+    
