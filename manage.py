@@ -223,7 +223,7 @@ def receivedMessage(event):
         elif 'hey' in text or 'hi' in text:
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
-        elif 'how are you' in text or 'how are you' in text or "how're you" \
+        elif 'how are you' in text or 'how are you' in text or 'how\'re you' \
                 in text:
             sendTextMessage(facebook_id, "I'm good! I hope you are, too!")
 
