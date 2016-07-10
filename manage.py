@@ -8,6 +8,7 @@ import requests
 import os
 import uuid
 import parse_query
+from datetime import datetime, timedelta
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
@@ -195,7 +196,6 @@ def receivedMessage(event):
         elif "my events" in text:
             sendTextMessage(facebook_id, google_cal.get_events_today(facebook_id))
 
-        # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
             split = text.split()
             location = parse_query.getPlace(text)
@@ -206,7 +206,7 @@ def receivedMessage(event):
                                           "San Francisco")
                 return
             elif location is None:
-                sendTextMessage(facebook_id, "Where do you want to get" +
+                sendTextMessage(facebook_id, "Where do you want " +
                                 food_type + "? Try saying: 'schedule " +
                                 food_type + " in San Francisco' ")
                 return
@@ -216,6 +216,7 @@ def receivedMessage(event):
 
             with_who = parse_query.getPerson(text)
             what_time = parse_query.getTime(text)
+
             sendCarouselMessage(facebook_id, response)
 
         # nyt
