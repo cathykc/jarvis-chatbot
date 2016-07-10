@@ -229,9 +229,8 @@ def receivedMessage(event):
             sendTextMessage(facebook_id, help)
 
         else:
-            sendCarouselMessage(facebook_id
-                                , "Sorry, I don't understand! Type "
-                                          "SOS for help.")
+            sendTextMessage(facebook_id, "Sorry, I don't understand! Type "
+                                             "SOS for help.")
 
     elif 'attachments' in message:
         sendTextMessage(facebook_id, "Attachment received.")
