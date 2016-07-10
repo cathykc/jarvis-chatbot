@@ -202,34 +202,34 @@ def receivedMessage(event):
             location = parse_query.getPlace(text)
             food_type = parse_query.getFood(text)
             if food_type is None:
-                sendTextMessage(senderID, "Tell me what type of food you want to "
+                sendTextMessage(facebook_id, "Tell me what type of food you want to "
                                           "schedule! Ex: 'scheudle coffee in "
                                           "San Francisco")
                 return
             elif location is None:
-                sendTextMessage(senderID, "Where do you want to get" +
+                sendTextMessage(facebook_id, "Where do you want to get" +
                                 food_type + "? Try saying: 'schedule " +
-                                food_type_+ " in San Francisco' ")
+                                food_type + " in San Francisco' ")
                 return
             response = yelp_api.get_top_locations(food_type, 3, location)
-            sendTextMessage(senderID, "Here are the best places to get " +
+            sendTextMessage(facebook_id, "Here are the best places to get " +
                             food_type + " in " + location + ":  ")
 
             with_who = parse_query.getPerson(text)
             what_time = parse_query.getTime()
-            sendCarouselMessage(senderID, response)
+            sendCarouselMessage(facebook_id, response)
 
         # nyt
         elif 'nyt' in text:
             response = yelp_api.get_top_articles()
-            sendCarouselMessage(senderID, response)
+            sendCarouselMessage(facebook_id, response)
 
         elif 'SOS' or 'sos' in text:
             help = "Try asking me to do the following commands: "
-            sendTextMessage(senderID, help)
+            sendTextMessage(facebook_id, help)
 
         else:
-            sendCarouselMessage(senderID, "Sorry, I don't understand! Type "
+            sendCarouselMessage(facebook_id, "Sorry, I don't understand! Type "
                                           "SOS for help.")
 
     elif 'attachments' in message:
