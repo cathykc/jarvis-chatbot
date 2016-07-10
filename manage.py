@@ -298,7 +298,8 @@ def receivedMessage(event):
         elif 'hey jarvis' in text:
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
-        elif 'who am i' in text:
+        elif 'who am i' in text or 'whats my name' in text or "what's my " \
+                                                              "name" in text:
             sendTextMessage(facebook_id, "You are " + first_name + "!")
 
         elif 'knock knock' in text:
