@@ -43,12 +43,24 @@ def dashboard(facebook_id=None):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-    return render_template('dashboard.html', facebook_id=facebook_id)
 
-@app.route("/lyft_deeplink")
-def lyft_deeplink():
+    # Check if lyft is connected
+    lyft_connected_flag = False
+    if user.lyft_access_token is not None:
+        lyft_connected_flag = True
+
+    # Check if google cal is connected
+    google_cal_connected_flag = False
+    if user.google_credentials is not None:
+        google_cal_connected_flag = True
+
+    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag)
+
+@app.route("/lyft_request_ride")
+def lyft_request_ride():
     # Determine what time of day it is
     isMorning = True
+
 
     # Get the user id
 

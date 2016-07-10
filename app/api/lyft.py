@@ -1,7 +1,10 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
-from models import * 
+from app import User
+from database import db
+from sqlalchemy.exc import IntegrityError
+from flask import session, redirect
 
 # *****************************************************************************
 #  LYFT SETUP / AUTH FUNCTIONS
@@ -32,7 +35,11 @@ def setup(request, facebook_id):
             work_lat,
             work_long, facebook_id)
 
-    return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
+    # Redirect to dashboard
+    redirect_url = "/" + session['fbid']
+    return redirect(redirect_url)
+
+    # return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
 
 # Store signal retrieved into database
 def store_signal_in_database(access_token, 
@@ -48,18 +55,29 @@ def store_signal_in_database(access_token,
 
     user = User.query.get(facebook_id)
     if not user:
-        return false
+        return False
 
     user.lyft_access_token = access_token
     user.lyft_refresh_token = refresh_token
-    user.lyft_go_home_time = go_home_time
-    user.lyft_home_address = home_address
+    # user.lyft_go_home_time = go_home_time
+    # user.lyft_home_address = home_address
     user.lyft_home_lat = home_lat
     user.lyft_home_long = home_long
-    user.lyft_go_work_time = go_work_time
-    user.lyft_work_address = work_address
+    # user.lyft_go_to_work_time = go_to_work_time
+    # user.lyft_work_address = work_address
     user.lyft_work_lat = work_lat
     user.lyft_work_long = work_long
+
+    print access_token
+    print refresh_token
+    print go_home_time
+    print home_address
+    print home_lat
+    print home_long
+    print go_to_work_time
+    print work_address
+    print work_lat
+    print work_long
 
     db.session.add(user)
     try:
@@ -67,7 +85,7 @@ def store_signal_in_database(access_token,
     except IntegrityError:
         db.session.rollback()
         return false
-    return true
+    return True
 
 # Returns (access token, refresh token)
 def authorize(request):
