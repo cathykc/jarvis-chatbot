@@ -275,8 +275,8 @@ def receivedPostback(event):
     else:
         print payload
         print "THE FOLLOWING IS THE PARSED JSON"
-        print json.parse(payload)
-        sendTextMessage(facebook_id, payload)
+        print json.parse(payload)['address']
+        sendTextMessage(facebook_id, "Putting this event into your calendar!")
 
 
 # *****************************************************************************
