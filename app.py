@@ -1,8 +1,8 @@
 from database import db
-from models import User
+from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from api import google_cal, yelp_api, lyft, nyt_api, triggers
+from app.api import google_cal, yelp_api, lyft, nyt_api, triggers
 import json
 import requests
 import os
@@ -356,11 +356,11 @@ def callSendAPI(messageData):
         print "Unable to send message."
 
 def setup_db():
-    with app.app_context():
-        print app
-        db.drop_all()
-        db.create_all()
-        db.session.commit()
+    # with app.app_context():
+    # print app
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
     print "database is set up!"
 
 

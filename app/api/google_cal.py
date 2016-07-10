@@ -7,7 +7,7 @@ import httplib2
 from apiclient import discovery
 from oauth2client import client
 from database import db
-from models import User
+from app import User
 
 def oauth(facebook_id):
     flask.session['facebook_id'] = facebook_id 
