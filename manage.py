@@ -355,10 +355,12 @@ def receivedMessage(event):
 
             who = parse_query.getPerson(text)
             time = parse_query.getTime(text)
+            print time
             if time is None:
                 parsed_time = None
             elif "am" in time or "pm" in time:
-                just_num = str[:2]
+                just_num = time[:2]
+                print just_num
                 if 'am' in time:
                     num_time = int(just_num)
                 else:
