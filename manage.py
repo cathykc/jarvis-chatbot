@@ -245,7 +245,7 @@ def receivedMessage(event):
             sendMorningCard(facebook_id)
 
         elif 'weather' in text:
-            sendWeather(facebook_id)
+            sendWeather(facebook_id) 
 
         elif 'test distance please' in text:
             google_maps.walking_time_from_home(
