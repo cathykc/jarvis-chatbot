@@ -68,23 +68,10 @@ def lyft_deeplink():
 
 @app.route("/lyft_auth_redirect")
 def lyft_auth():
-    # auth lyft
-    (access_token, refresh_token) = lyft.authorize(request)
-
-    # Get signal
-    (go_home_time,
-            home_address,
-            home_lat,
-            home_long,
-            go_to_work_time,
-            work_address,
-            work_lat,
-            work_long) = lyft.analyze(access_token, refresh_token)
-
-    # Store access_token and refresh_token in db
-    fbid = session['fbid']
-
-    return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
+    facebook_id = session['fbid']
+    if facebook_id == None:
+        return "Click in through Messenger"
+    return lyft.setup(request, facebook_id)
 
 @app.route("/google_auth/<facebook_id>")
 def google_auth(facebook_id=None):
