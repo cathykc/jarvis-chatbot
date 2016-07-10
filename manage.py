@@ -66,15 +66,9 @@ def scheduler(facebook_id=None):
 
     return render_template('scheduler.html', facebook_id=facebook_id, events=events)
 
-def lyft_request_ride(facebook_id):
-    # Determine what time of day it is
-    current_datetime = datetime.datetime.now()
-    if current_datetime.hour > 4 and current_datetime.hour < 12:
-        isMorning = True
-    else:
-        isMorning = False
+def lyft_request_ride(facebook_id, isMorning):
 
-        # Get the user
+    # Get the user
     user = User.query.get(facebook_id)
     if not user:
         return False
@@ -153,7 +147,7 @@ def message_test(facebook_id=None, message=""):
 def lyft_trigger():
     facebook_id = request.args.get('facebook_id')
     sendLyftCTA(facebook_id)    
-    return "dd"
+    return ""
 
 @app.route("/scheduler_trigger/<event_id>")
 def scheduler_trigger(event_id=None):
@@ -165,6 +159,12 @@ def scheduler_trigger(event_id=None):
     if enum == 1:
         # Morning info card
         sendMorningCard(facebook_id)
+    elif enum == 2:
+        # Morning commute
+        sendLyftCTA(facebook_id, True) 
+    elif enum == 3:
+        # Evening commute
+        sendLyftCTA(facebook_id, False) 
     else:
         sendTextMessage(facebook_id, "wasn't handled")
 
@@ -397,9 +397,11 @@ def receivedPostback(event):
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
         sendCarouselMessage(facebook_id, [element])
-    elif payload == 'CALL_LYFT':
+    elif 'CALL_LYFT' in payload:
         # Request ride
-        isMorning = lyft_request_ride(facebook_id)
+        print "CALLING LYFT HERE"
+        isMorning = ("work" in payload)
+        lyft_request_ride(facebook_id, isMorning)
 
         if isMorning:
             sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes! Also, check out what's going on in the world while you wait:")
@@ -462,13 +464,21 @@ def sendEventDigest(facebook_id):
                     "\n".join(events_formatted))
 
 # This mesasge sends a Lyft deeplink CTA to a recipient through messenger
-def sendLyftCTA(facebook_id):
-    buttonsList = [{
-        "type" : "postback",
-        "payload" : "CALL_LYFT",
-        "title" : "Get me a Lyft home"
-    }]
-    sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
+def sendLyftCTA(facebook_id, isMorning):
+    if isMorning:
+        buttonsList = [{
+            "type" : "postback",
+            "payload" : "CALL_LYFT work",
+            "title" : "Lyft me to work"
+        }]
+        sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
+    else:
+        buttonsList = [{
+            "type" : "postback",
+            "payload" : "CALL_LYFT home",
+            "title" : "Lyft me home"
+        }]
+        sendButtonMessage(facebook_id, 'Need a ride home?', buttonsList)
 
 def am_i_busy(num):
     if num <= 2:
