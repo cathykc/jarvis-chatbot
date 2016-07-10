@@ -374,10 +374,14 @@ def receivedPostback(event):
         isMorning = lyft_request_ride(facebook_id)
 
         if isMorning:
-            sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes!")
+            sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes! Also, check out what's going on in the world while you wait:")
         else:
-            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
+            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes. Also, check out what's going on in the world while you wait:")
         
+        # Send news
+        response = nyt_api.get_top_articles(5)
+        sendCarouselMessage(facebook_id, response)
+
     else:
         print payload
         parsed = json.loads(payload)
