@@ -194,17 +194,21 @@ def scheduler_trigger(event_id=None):
     elif enum == 4:
         metadata = json.loads(event.metadata_json)
         sendWalkingMessage(facebook_id, metadata)
+        db.session.delete(event)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
     elif enum == 5:
         metadata = json.loads(event.metadata_json)
         sendDrivingMessage(facebook_id, metadata)
+        db.session.delete(event)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
     else:
         sendTextMessage(facebook_id, "wasn't handled")
-
-    db.session.delete(event)
-    try:
-        db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
     return ''
 
 
