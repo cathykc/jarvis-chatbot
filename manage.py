@@ -2,7 +2,7 @@ from database import db
 from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare google_maps
+from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare, google_maps
 import json
 import requests
 import os
