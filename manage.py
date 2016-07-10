@@ -8,7 +8,7 @@ import requests
 import os
 import uuid
 import parse_query
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 import datetime
@@ -239,8 +239,18 @@ def receivedMessage(event):
                 facebook_id, 
                 "Test Event",
                 "1 Hacker Way",
-                google_cal.now(),
-                google_cal.minutes_later(60),
+                google_cal.now().isoformat(),
+                google_cal.minutes_later(datetime.now(), 60).isoformat(),
+                ["danielzh@sas.upenn.edu"]
+            )
+
+        elif "event at 7" in text:
+            google_cal.create_event(
+                facebook_id, 
+                "Test Event",
+                "1 Hacker Way",
+                google_cal.today_at(19, 0).isoformat(),
+                google_cal.minutes_later(google_cal.today_at(19, 0), 60).isoformat(),
                 ["danielzh@sas.upenn.edu"]
             )
 
@@ -314,7 +324,7 @@ def receivedPostback(event):
         element = {"title": "Hi " + r.json()["first_name"] + ", nice to meet you!"}
         element["subtitle"] = "Set me up by visiting the Jarvis Dashboard."
         element["item_url"] = dashboard_url
-        element["image_url"] = "http://images-cdn.moviepilot.com/image/upload/c_fill,h_1080,w_1920/t_mp_quality/bloo-desktop-the-shocking-truth-behind-foster-s-home-for-imaginary-friends-png-54420.jpg"
+        element["image_url"] = "https://easilydo.files.wordpress.com/2014/03/ownpersonalasst-bloggraphic.jpg"
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
         sendCarouselMessage(facebook_id, [element])
