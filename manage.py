@@ -330,7 +330,7 @@ def receivedMessage(event):
             sendCarouselMessage(facebook_id, response)
 
         elif 'help me' in text:
-            help = "Try asking me to do the following commands: "
+            help = "Try asking me to do the following commands:\n\n- news\n- my events\n weather"
             sendTextMessage(facebook_id, help)
 
         elif 'hey jarvis' in text:
