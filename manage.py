@@ -473,7 +473,7 @@ def receivedPostback(event):
     facebook_id = event['sender']['id']
     payload = event['postback']['payload']
 
-    if payload is None or payload == "noop":
+    if payload is None or payload == "noop" or payload == "SCHEDULE_EVENT":
         return
 
     if payload == "GET_STARTED":
