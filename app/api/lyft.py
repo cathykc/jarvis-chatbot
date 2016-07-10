@@ -391,6 +391,12 @@ def request_ride(access_token,
         }
     print(body)
     r = requests.post(ride_request_url, data = body, headers=head);
+    if 'primetime_confirmation_token' in r.json():
+        print("THERE IS PRIMETIME")
+        primetime_confirmation_token = r.json()['primetime_confirmation_token']
+        body['primetime_confirmation_token'] = primetime_confirmation_token
+
+        r = requests.post(ride_request_url, data = body, headers=head);
     print('REQUESTED!!!!!!!!!!')
     print(r.text)
 
