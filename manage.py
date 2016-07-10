@@ -398,6 +398,7 @@ def receivedPostback(event):
         print parsed['address']
         print parsed['title']
         if parsed['time'] is None:
+            print "time is none"
             time = google_cal.now()
             end_time = google_cal.minutes_later(time, 30).isoformat()
         else:
