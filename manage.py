@@ -433,12 +433,23 @@ def sendWeather(facebook_id):
 def sendEventDigest(facebook_id):
     events = google_cal.get_events_today(facebook_id)
     events_formatted = []
+    count = 0
     for event in events:
+        count += 1
         events_formatted.append(event["start_time"] + ": " + event["title"])
 
-    sendTextMessage(facebook_id, "Here's what you're doing today:\n\n"+ "\n".join(events_formatted))
+    busy = am_i_busy(count)
+    sendTextMessage(facebook_id, busy + "Here's what you're doing today:\n\n"+
+                    "\n".join(events_formatted))
 
-
+def am_i_busy(num):
+    if num <= 2:
+        return ""
+    elif num <= 4:
+        return "Looks like you're a little busy today! You have " + num _
+        "events."
+    elif num >= 5:
+        return "You're very busy today! You have" + num + "events!"
 
 # *****************************************************************************
 # CHATBOT MESSAGES
