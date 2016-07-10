@@ -171,7 +171,22 @@ def matchType(text, *and_args):
 
 def receivedPostback(event):
     senderID = event['sender']['id']
-    sendTextMessage(senderID, "Postback called.")
+    payload = event['postback']['payload']
+
+    if payload == "GET_STARTED":
+        r = requests.get("https://graph.facebook.com/v2.6/" + str(senderID) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
+        
+        dashboard_url = "http://jarvis-chatbot.herokuapp.com/" + senderID
+
+        element = {"title": "Hi" + r.json()["first_name"] + "! Set me up by visiting the Jarvis Dashboard."}
+        element["subtitle"] = "I'm here to help you throughout your day."
+        element["item_url"] = dashboard_url
+        element["image_url"] = "https://i.ytimg.com/vi/nFi6e6Rs2so/maxresdefault.jpg"
+        element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
+
+        sendCarouselMessage(senderID, [element])
+    else:   
+        sendTextMessage(senderID, "Postback called.")
 
 
 # *****************************************************************************
