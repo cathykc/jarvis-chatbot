@@ -533,6 +533,7 @@ def receivedPostback(event):
         parsed = json.loads(payload)
         if 'payload' in parsed:
             if parsed['payload'] == 'WALK':
+                sendTextMessage(facebook_id, "Good on you! You're also only 1265 steps away from your goal for this week - this walk will complete your goal!")
                 drive_id = parsed['drive_id']
                 event = Event.query.get(drive_id)
                 if event is None:
@@ -542,9 +543,8 @@ def receivedPostback(event):
                     db.session.commit()
                 except IntegrityError:
                     db.session.rollback()
-                sendTextMessage(facebook_id, "Good on you! You're also only 1265 steps away from your goal for this week - this walk will complete your goal!")
                 return
-                
+
                 #Get scheduled async, remove it
         print parsed['address']
         print parsed['title']
