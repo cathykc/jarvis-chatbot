@@ -216,12 +216,12 @@ def receivedMessage(event):
                             food_type + " in " + location + ":  ")
 
             with_who = parse_query.getPerson(text)
-            what_time = parse_query.getTime()
+            what_time = parse_query.getTime(text)
             sendCarouselMessage(facebook_id, response)
 
         # nyt
         elif 'nyt' in text:
-            response = yelp_api.get_top_articles()
+            response = nyt_api.get_top_articles()
             sendCarouselMessage(facebook_id, response)
 
         elif 'SOS' or 'sos' in text:
