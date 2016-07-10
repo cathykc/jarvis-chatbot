@@ -79,8 +79,8 @@ def foursquare_push():
     food_type = 'Ice Cream'
     location = 'Menlo Park'
     response = yelp_api.get_top_locations_swarm(food_type, 5, location)
-    sendTextMessage('1243735802327809', "Here are the best places to get " +
-                    food_type + "in " + location + ":  ")
+    sendTextMessage('1243735802327809', "Since you are in Menlo park, here are the best places to get " +
+                    food_type + "around you: ")
     sendCarouselMessage('1243735802327809', response)
 
     return ''
