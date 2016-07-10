@@ -51,3 +51,27 @@ def get_top_locations(type, number, location, time, who):
         locations.append(message)
     return locations
 
+# prints the number of relevant results in that location
+def get_top_locations_swarm(type, number, location):
+    locations = []
+    params = {
+        'term': type,
+        'limit': number
+    }
+    response = client.search(location, **params)
+    for business in response.businesses:
+        print location
+        print type
+        
+        message = {}
+        message["title"] = business.name
+        message["subtitle"] = business.snippet_text
+        message["item_url"] = business.url
+        message["image_url"] = business.image_url
+
+        buttons = [{"type": "web_url", "title" : 'View ',
+                    "payload"
+                    : json.dumps(payload)}]
+        message["buttons"] = buttons
+        locations.append(message)
+    return locations

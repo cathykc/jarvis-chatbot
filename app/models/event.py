@@ -12,6 +12,7 @@ class Event(db.Model):
     # 2 - morning lyft
     # 3 - afternoon lyft
     # 4 - walking reminder
+    # 4 - walking reminder
     # 5 - driving reminder
     # 6 - ice cream fouresquare
  
