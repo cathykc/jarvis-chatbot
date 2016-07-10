@@ -15,16 +15,40 @@
 
 <body>
     <div class="container">
-        <h2>List of Events</h2>
+        <h2>Scheduled Events</h2>
+
         {% for e in events %}
-            {{e.id}} - {{ e.facebook_id }} - {{ e.send_timestamp.hour }}:{{ e.send_timestamp.minute }} {{e.send_timestamp.tzinfo}} - {{ e.trigger_enum}}
-            <button data-id='{{ e.id }}'>Trigger</button><br><br>
+        <div class="row">
+            <span class="event_info">
+                {{e.id}} --- Type: 
+                <span class="event_type">
+                    {% if e.trigger_enum == 1 %}
+                        Morning Info Card
+                    {% elif e.trigger_enum == 2 %}
+                        Morning Lyft
+                    {% elif e.trigger_enum == 3 %}
+                        Afternoon Lyft
+                    {% elif e.trigger_enum == 4 %}
+                        Calendar Event Reminder
+                    {% else %}
+                        Unknown Type
+                    {% endif %}
+                </span>
+
+                | Facebook ID: {{ e.facebook_id }} | <strong>
+                (
+                    Scheduled for: {{ e.send_timestamp.hour }}:{% if (e.send_timestamp.minute|string|length) < 2 %}{{ e.send_timestamp.minute }}0{% else %}{{ e.send_timestamp.minute }}{% endif %}
+                )</strong>
+            </span>
+            <div data-id='{{ e.id }}' class="trigger">Trigger</div><hr>
+        </div>
         {% endfor %}
     </div>
 
     <script type="text/javascript">
-        $('button').click(function() {
+        $('.trigger').click(function() {
             var eventId = $(this).data('id');
+            console.log(eventId)
             $.ajax({
                 url: '/scheduler_trigger/' + eventId,
                 type: 'GET'
