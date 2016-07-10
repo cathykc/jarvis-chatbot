@@ -298,6 +298,45 @@ def rreplace(s, old, occurrence):
 # *****************************************************************************
 # LYFT RIDE REQUEST FUNCTIONS
 # *****************************************************************************
-def request_ride():
-    a = 1
+def request_ride(access_token, 
+    refresh_token,
+    pickupLat, 
+    pickupLong, 
+    dropoffLat, 
+    dropoffLong, 
+    rideType):
+
+    access_token = refresh_access_token(refresh_token)
+
+    head = {"Authorization":"Bearer " + access_token}
+
+    ride_request_url = 'https://api.lyft.com/v1/rides'
+    body = {
+        'ride_type': 'lyft', 
+        'origin' : {
+                'lat' : pickupLat,
+                'lng' : pickupLong
+            },
+        'origin.lat' : pickupLat,
+        'origin.lng' : pickupLong,
+        'destination' : {
+                'lat' : dropoffLat,
+                'lng' : dropoffLong
+            }
+        }
+    print(body)
+    r = requests.post(ride_request_url, data = body, headers=head);
+    print('REQUESTED!!!!!!!!!!')
+    print(r.text)
+
+def refresh_access_token(refresh_token):
+    client_id = 'rFR4L19xgF5R'
+    client_secret = 'pKzQ-w5cEypEPcxB2Ny6DHg2W1Ag1VUG'
+    refresh_url = 'https://api.lyft.com/oauth/token'
+
+    r = requests.post(refresh_url, data = {'grant_type':'refresh_token', 'refresh_token':refresh_token}, auth=HTTPBasicAuth(client_id, client_secret))
+    access_token = r.json()['access_token']
+
+    return access_token
+    
 

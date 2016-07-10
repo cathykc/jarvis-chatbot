@@ -2,7 +2,7 @@ from database import db
 from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from app.api import google_cal, yelp_api, lyft, nyt_api, triggers
+from app.api import google_cal, yelp_api, lyft, nyt_api
 import json
 import requests
 import os
@@ -11,6 +11,8 @@ import parse_query
 from datetime import datetime, timedelta
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+import datetime
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') if os.environ.get('DATABASE_URL') else "sqlite:////tmp/test.db"
@@ -57,26 +59,43 @@ def dashboard(facebook_id=None):
 
     return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag)
 
-@app.route("/lyft_request_ride")
-def lyft_request_ride():
+@app.route("/lyft_request_ride/<facebook_id>")
+def lyft_request_ride(facebook_id=None):
     # Determine what time of day it is
-    isMorning = True
+    current_datetime = datetime.datetime.now()
+    if current_datetime.hour > 4 and current_datetime.hour < 12:
+        isMorning = True
+    else:
+        isMorning = False
 
-
-    # Get the user id
+        # Get the user
+    user = User.query.get(facebook_id)
+    if not user:
+        return False
 
     # Determine pickup and dropoff based on home, work, and isMorning flag
     rideType = 'lyft_line'
-    # if isMorning:
-    #     # Retrieve work as destination
-    # else:
-    #     # Retrieve home as destination
 
-    # temp
-    dropoffLat = 37.75593
-    dropoffLong = -122.41091
+    if isMorning:
+         # Retrieve work as destination
+         pickupLat = user.lyft_home_lat
+         pickupLong = user.lyft_home_long
+         dropoffLat = user.lyft_work_lat
+         dropoffLong = user.lyft_work_long
+    else:
+         # Retrieve home as destination
+         pickupLat = user.lyft_work_lat
+         pickupLong = user.lyft_work_long
+         dropoffLat = user.lyft_home_lat
+         dropoffLong = user.lyft_home_long
 
-    return render_template('lyft_deeplink.html', rideType=rideType, dropoffLat=dropoffLat, dropoffLong=dropoffLong)
+    access_token = user.lyft_access_token
+    refresh_token = user.lyft_refresh_token
+
+    # Request ride
+    lyft.request_ride(access_token, refresh_token, pickupLat, pickupLong, dropoffLat, dropoffLong, rideType)
+
+    return "Requested a ride!"
     
 
 @app.route("/lyft_auth_redirect")
@@ -120,9 +139,17 @@ def message_test(facebook_id=None, message=""):
 @app.route("/lyft_trigger")
 def lyft_trigger():
     facebook_id = request.args.get('facebook_id')
+    send_lyft_cta(facebook_id)    
+    return "dd"
 
-    triggers.send_lyft_cta(facebook_id)    
-    return ""
+# This mesasge sends a Lyft deeplink CTA to a recipient through messenger
+def send_lyft_cta(facebook_id):
+    buttonsList = [{
+        "type" : "web_url",
+        "url" : "http://jarvis-chatbot.herokuapp.com/lyft_request_ride/" + facebook_id,
+        "title" : "Get a Lyft to Work"
+    }]
+    sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
 
 
 # *****************************************************************************
