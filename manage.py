@@ -94,7 +94,7 @@ def lyft_request_ride(facebook_id):
     # Request ride
     lyft.request_ride(access_token, refresh_token, pickupLat, pickupLong, dropoffLat, dropoffLong, rideType)
 
-    return "Requested a ride!"
+    return isMorning
     
 
 @app.route("/lyft_auth_redirect")
@@ -287,7 +287,13 @@ def receivedMessage(event):
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
         elif 'lyft' in text:
-            lyft_request_ride(facebook_id)
+            # Request ride
+            isMorning = lyft_request_ride(facebook_id)
+
+            if isMorning:
+                sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes!")
+            else:
+                sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
         else:
             sendTextMessage(facebook_id, "Sorry, I don't understand! Type "
                                              "SOS for help.")
