@@ -451,7 +451,7 @@ def receivedPostback(event):
             sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes.")
             
             if reminders_string != '':
-                reminders_string = 'Here\'s what you wanted me to remind you about today: \n\n' + reminders_string 
+                reminders_string = 'Here\'s what you wanted me to remind you about today:\n\n' + reminders_string 
                 sendTextMessage(facebook_id, reminders_string)
         
 
