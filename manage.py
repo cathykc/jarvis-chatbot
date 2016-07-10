@@ -210,12 +210,15 @@ def receivedMessage(event):
                                 food_type + "? Try saying: 'schedule " +
                                 food_type + " in San Francisco' ")
                 return
-            response = yelp_api.get_top_locations(food_type, 3, location)
+
+            who = parse_query.getPerson(text)
+            time = parse_query.getTime(text)
+
+            response = yelp_api.get_top_locations(food_type, 3, location,
+                                                  time, who)
             sendTextMessage(facebook_id, "Here are the best places to get " +
                             food_type + "in " + location + ":  ")
 
-            with_who = parse_query.getPerson(text)
-            what_time = parse_query.getTime(text)
 
             sendCarouselMessage(facebook_id, response)
 
