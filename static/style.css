@@ -222,7 +222,8 @@ h2 {
 
 .trigger:hover {
 	cursor: pointer;
-	background-color: #EEFFEE;
+	background-color: #33CF43;
+	color: #FFF;
 }
 
 .event_info {

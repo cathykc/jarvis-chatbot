@@ -20,7 +20,20 @@
         {% for e in events %}
         <div class="row">
             <span class="event_info">
-                {{e.id}} --- Type: {{ e.trigger_enum}} | Facebook ID: {{ e.facebook_id }} | <strong>
+                {{e.id}} --- Type: 
+                {% if e.trigger_enum == 1 %}
+                    Morning Info Card
+                {% elif e.trigger_enum == 2 %}
+                    Morning Lyft
+                {% elif e.trigger_enum == 3 %}
+                    Afternoon Lyft
+                {% elif e.trigger_enum == 4 %}
+                    Calendar Event Reminder
+                {% else %}
+                    Unknown Type
+                {% endif %}
+
+                | Facebook ID: {{ e.facebook_id }} | <strong>
                 (
                     Scheduled for: {{ e.send_timestamp.hour }}:{% if (e.send_timestamp.minute|string|length) < 2 %}{{ e.send_timestamp.minute }}0{% else %}{{ e.send_timestamp.minute }}{% endif %}
                 )</strong>
