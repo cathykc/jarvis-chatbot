@@ -402,8 +402,13 @@ def receivedPostback(event):
             end_time = google_cal.minutes_later(time, 30).isoformat()
         else:
             time = parsed['time']
+            print time
             end_time = google_cal.minutes_later(time, 60).isoformat()
+            print end_time
+            print parsed['summary']
         if parsed['person'] is None:
+            emails = []
+        else:
             emails = []
         google_cal.create_event(facebook_id, parsed['summary'],
                                 parsed['address'], time, end_time, emails)
