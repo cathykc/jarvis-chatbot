@@ -220,6 +220,9 @@ def receivedMessage(event):
         if 'ping' in text:
              sendTextMessage(facebook_id, "pong")
 
+        elif 'fuck' in text or 'shit' in text or 'damn' in text:
+            sendTextMessage(facebook_id, "Watch your language!")
+
         elif 'hey' in text or 'hi' in text:
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
@@ -313,9 +316,6 @@ def receivedMessage(event):
 
         elif 'do you have free will' in text:
             sendTextMessage(facebook_id, "Yes.")
-
-        elif 'fuck' in text or 'shit' in text or 'damn' in text:
-            sendTextMessage(facebook_id, "Watch your language!")
 
         elif 'what is your name' in text or 'who are you' in text or 'whats ' \
                                                                      'your ' \
