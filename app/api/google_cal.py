@@ -11,14 +11,15 @@ from app import User
 
 def oauth(facebook_id):
     user = User.query.get(facebook_id)
+    session['facebook_id'] = facebook_id
     if not user:
         return "User not found"
     print "google credentials", user.google_credentials
     if not user.google_credentials:
-        return flask.redirect(flask.url_for('google_oauth2callback', state=facebook_id))       
+        return flask.redirect(flask.url_for('google_oauth2callback'))       
     credentials = client.OAuth2Credentials.from_json(json.loads(user.google_credentials))
     if credentials.access_token_expired:
-        return flask.redirect(flask.url_for('google_oauth2callback', state=facebook_id))
+        return flask.redirect(flask.url_for('google_oauth2callback'))
     else:
         # Already oauthed.
         return "Already oauthed"
