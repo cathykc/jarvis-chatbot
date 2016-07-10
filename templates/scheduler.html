@@ -8,16 +8,29 @@
     <link rel="stylesheet" type"text/css" href="{{ url_for('static',filename='style.css') }}"/>
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Oswald:300' rel='stylesheet' type='text/css'>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 
 <body>
     <div class="container">
         <h2>List of Events</h2>
         {% for e in events %}
-            {{ e.facebook_id }}-{{ e.send_timestamp }}-{{ e.trigger_enum}}
-            <button>Trigger</button>
+            {{e.id}} - {{ e.facebook_id }} - {{ e.send_timestamp }} - {{ e.trigger_enum}}
+            <button data-id='{{ e.id }}'>Trigger</button>
         {% endfor %}
     </div>
+
+    <script type="text/javascript">
+        $('button').click(function() {
+            var eventId = $(this).data('id');
+            $.ajax({
+                url: '/scheduler_trigger/' + eventId,
+                type: 'GET'
+            });
+        });
+    </script>
     
 </body>
 </html>

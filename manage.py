@@ -155,6 +155,22 @@ def lyft_trigger():
     send_lyft_cta(facebook_id)    
     return "dd"
 
+@app.route("/scheduler_trigger/<event_id>")
+def scheduler_trigger(event_id=None):
+    event = Event.query.get(event_id)
+
+    facebook_id = event.facebook_id
+    enum = event.trigger_enum
+
+    if enum == 1:
+        # trigger something
+        sendTextMessage(facebook_id, "trigger")
+    else:
+        sendTextMessage(facebook_id, "wasn't handled")
+
+    return ''
+
+
 # This mesasge sends a Lyft deeplink CTA to a recipient through messenger
 def send_lyft_cta(facebook_id):
     buttonsList = [{
