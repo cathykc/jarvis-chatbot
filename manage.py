@@ -418,12 +418,25 @@ def receivedPostback(event):
 
         if isMorning:
             sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes! Also, check out what's going on in the world while you wait:")
+            
+            # Send news
+            response = nyt_api.get_top_articles(5)
+            sendCarouselMessage(facebook_id, response)
         else:
-            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes. Also, check out what's going on in the world while you wait:")
+            # Prep reminders
+            reminders_string = ''
+
+            reminders = User.query.get(facebook_id).reminders
+            reminders_list = reminders.split('$')
+            for reminder in reminders_list:
+                if reminder != '':
+                    reminders_string += '- ' + reminder + '\n'
+
+            if reminders_string != '':
+                reminders_string = ' Here\'s what you wanted me to remind you about today: ' + reminders_string 
+            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes." + reminders_string)
         
-        # Send news
-        response = nyt_api.get_top_articles(5)
-        sendCarouselMessage(facebook_id, response)
+        
 
     # create cal event from yelp
     else:
