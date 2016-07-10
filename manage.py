@@ -207,7 +207,6 @@ def receivedMessage(event):
                 ["danielzh@sas.upenn.edu"]
             )
 
-        # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
             split = text.split()
             location = parse_query.getPlace(text)
