@@ -90,10 +90,11 @@
 	</div>
 	
 </body>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
+	$("#loading_background").hide();
 	$("#teach").click(function() {
 		console.log("hello");
 		$("#loading_background").show();
@@ -110,9 +111,6 @@ $(document).ready(function() {
 				}, 1000);
 			}, 1000);
 		}, 1000);
-		
-		
-
 	});
 	
 });
