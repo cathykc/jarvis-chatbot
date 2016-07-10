@@ -1,13 +1,13 @@
 from database import db
 from models import User
 import app
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, render_template, session, url_for
 from api import google_cal, yelp_api, lyft, nyt_api, triggers
 import json
 import requests
 import os
 import uuid
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db.init_app(app)
@@ -347,6 +347,12 @@ def callSendAPI(messageData):
         print "Successfully sent message."
     else:
         print "Unable to send message."
+
+def setup_db():
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        db.session.commit()
 
 
 if __name__ == "__main__":
