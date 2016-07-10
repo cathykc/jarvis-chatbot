@@ -57,10 +57,9 @@ def dashboard(facebook_id=None):
     if user.google_credentials is not None:
         google_cal_connected_flag = True
 
-    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag)
+    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag, google_cal_connected_flag=google_cal_connected_flag)
 
-@app.route("/lyft_request_ride/<facebook_id>")
-def lyft_request_ride(facebook_id=None):
+def lyft_request_ride(facebook_id):
     # Determine what time of day it is
     current_datetime = datetime.datetime.now()
     if current_datetime.hour > 4 and current_datetime.hour < 12:
@@ -95,12 +94,12 @@ def lyft_request_ride(facebook_id=None):
     # Request ride
     lyft.request_ride(access_token, refresh_token, pickupLat, pickupLong, dropoffLat, dropoffLong, rideType)
 
-    return "Requested a ride!"
+    return isMorning
     
 
 @app.route("/lyft_auth_redirect")
 def lyft_auth():
-    facebook_id = session['fbid']
+    facebook_id = request.args.get('state')
     if facebook_id == None:
         return "Click in through Messenger"
     return lyft.setup(request, facebook_id)
@@ -145,9 +144,9 @@ def lyft_trigger():
 # This mesasge sends a Lyft deeplink CTA to a recipient through messenger
 def send_lyft_cta(facebook_id):
     buttonsList = [{
-        "type" : "web_url",
-        "url" : "http://jarvis-chatbot.herokuapp.com/lyft_request_ride/" + facebook_id,
-        "title" : "Get a Lyft to Work"
+        "type" : "postback",
+        "payload" : "" + facebook_id,
+        "title" : "Get me a Lyft home"
     }]
     sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
 
@@ -210,14 +209,14 @@ def receivedMessage(event):
     facebook_id = event['sender']['id']
     message = event['message']
 
-    print facebook_id
+    # print facebook_id
+    print "---------------------------------"
     print message
     r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
     first_name = r.json()["first_name"]
 
     if 'text' in message:
-        # sendTextMessage(facebook_id, "Text received.")
-        text = message["text"]
+        text = message["text"].lower()
 
         if 'ping' in text:
              sendTextMessage(facebook_id, "pong")
@@ -227,7 +226,6 @@ def receivedMessage(event):
             # currently hard-coded (ideally get from lyft addrress)
             weather = weather_api.getWeatherConditions("San Francisco")
             sendTextMessage(facebook_id, "Good morning {}! Today in {} it is {} with a temperature of {}.".format(first_name, weather["city"], weather["weather"], weather["temperature"]))
-
 
 
         elif "my events" in text:
@@ -279,18 +277,50 @@ def receivedMessage(event):
 
             sendCarouselMessage(facebook_id, response)
 
-        # nyt
-        elif 'nyt' in text:
+        elif 'news' in text:
             response = nyt_api.get_top_articles()
             sendCarouselMessage(facebook_id, response)
 
-        elif 'SOS' in text or 'sos' in text:
+        elif 'help me' in text:
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
 
+        elif 'lyft' in text:
+            print("REACHED LYFTTTTTT")
+            # Request ride
+            isMorning = lyft_request_ride(facebook_id)
+
+            if isMorning:
+                sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes!")
+            else:
+                sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
+
+        elif 'hey jarvis' in text:
+            sendTextMessage(facebook_id, "Hey, " + first_name + "!")
+
+        elif 'who am i' in text:
+            sendTextMessage(facebook_id, "You are " + first_name + "!")
+
+        elif 'knock knock' in text:
+            sendTextMessage(facebook_id, "Who's there?! I'm Jarvis!")
+
+        elif 'do you have free will' in text:
+            sendTextMessage(facebook_id, "Yes.")
+
+        elif 'fuck' in text or 'shit' in text or 'damn' in text:
+            sendTextMessage(facebook_id, "Watch your language!")
+
+        elif 'what is your name' in text or 'who are you' in text or 'whats ' \
+                                                                     'your ' \
+                                                                     'name' \
+                in text:
+            sendTextMessage(facebook_id, "My name is Jarvis!")
+
         else:
-            sendTextMessage(facebook_id, "Sorry, I don't understand! Type "
-                                             "SOS for help.")
+            sendTextMessage(facebook_id, "Sorry, I don't quite understand what "
+                                         "you "
+                                         "said! Type "
+                                             "help me for help.")
 
     elif 'attachments' in message:
         sendTextMessage(facebook_id, "Attachment received.")
