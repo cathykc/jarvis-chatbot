@@ -178,10 +178,10 @@ def receivedPostback(event):
         
         dashboard_url = "http://jarvis-chatbot.herokuapp.com/" + senderID
 
-        element = {"title": "Hi" + r.json()["first_name"] + "! Set me up by visiting the Jarvis Dashboard."}
-        element["subtitle"] = "I'm here to help you throughout your day."
+        element = {"title": "Hi " + r.json()["first_name"] + ", nice to meet you!"}
+        element["subtitle"] = "Set me up by visiting the Jarvis Dashboard."
         element["item_url"] = dashboard_url
-        element["image_url"] = "https://i.ytimg.com/vi/nFi6e6Rs2so/maxresdefault.jpg"
+        element["image_url"] = "http://images-cdn.moviepilot.com/image/upload/c_fill,h_1080,w_1920/t_mp_quality/bloo-desktop-the-shocking-truth-behind-foster-s-home-for-imaginary-friends-png-54420.jpg"
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
         sendCarouselMessage(senderID, [element])
