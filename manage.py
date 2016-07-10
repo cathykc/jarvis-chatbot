@@ -359,7 +359,7 @@ def receivedMessage(event):
             if time is None:
                 parsed_time = None
             elif "am" in time or "pm" in time:
-                just_num = time[:2]
+                just_num = time[:-2]
                 just_num.strip()
                 print just_num
                 if 'am' in time:
