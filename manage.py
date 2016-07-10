@@ -300,6 +300,10 @@ def receivedMessage(event):
             )
             sendTextMessage(facebook_id, "Scheduling an event right now!")
 
+        elif "get free time for gym" in text:
+            # any time today for an hour
+            sendFreeTimeMessage(first_name, "gym", facebook_id, 3600, None, None)
+
         elif "event at 7" in text:
             google_cal.create_event(
                 facebook_id, 
@@ -534,6 +538,23 @@ def sendDrivingMessage(facebook_id, metadata):
         buttonList
     )
 
+def sendFreeTimeMessage(first_name, event_name, facebook_id, interval_length_in_sec, start_time, end_time):
+    free_intervals = google_cal.get_free_time(facebook_id, interval_length_in_sec, start_time, end_time)
+    if len(free_intervals) == 0:
+        sendTextMessage(facebook_id, "Sorry {}, it seems like you don't have time today.".format(first_name))
+    else:
+        buttonList = []
+        for interval in free_intervals:
+            buttonList.append({
+                'type': "postback",
+                'title': interval[0].strftime("%I:%M %p") + " - " + interval[1].strftime("%I:%M %p"),
+                'payload': "SCHEDULE_EVENT"
+            })
+        sendButtonMessage(
+            facebook_id,
+            "Here are some times you're free, let me know if you want me to schedule {} in!".format(event_name),
+            buttonList
+        )
 
 def sendMorningCard(facebook_id):
     sendWeather(facebook_id)

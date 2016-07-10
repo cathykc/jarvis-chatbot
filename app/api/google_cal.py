@@ -143,25 +143,37 @@ def create_event(facebook_id, summary, location, start_time, end_time, emails):
     return True
 
 # overlapping events will lead to unpredictable behavior
-def get_free_time(facebook_id, interval_length_in_sec, start_time, end_time, events):
+def get_free_time(facebook_id, interval_length_in_sec, start_time, end_time):
+    events = get_events_today(facebook_id)
+    print events
     now = datetime.now()
     if start_time is None:
-        start_time = now
+        start_time = datetime(now.year, now.month, now.day, now.hour, now.minute, now.second)
     today = datetime.today()
     start_of_today = datetime(today.year, today.month, today.day)
-    end_of_today = start_of_today + timedelta(days=1) # Timezone difference
+    end_of_today = start_of_today + timedelta(days=1, seconds=-1) # Timezone difference
     if end_time is None:
         end_time = end_of_today
 
+        print "start and end", start_time, end_time
+
     if events is None or len(events) == 0:
-        return [(now, end_of_today)]
+        print "no events, free all day!"
+        return [(start_time, end_time)]
     output = []
     last_end_time = start_time
     for event in events:
         next_start_time = datetime.strptime(event['start_time'], "%I:%M %p")
-        print next_start_time - last_end_time
-        if (next_start_time - last_end_time) > timedelta(seconds=interval_length_in_sec):
-            output.append((last_end_time, next_start_time))
+        next_start_time = datetime(today.year, today.month, today.day, next_start_time.hour, next_start_time.minute, 0)
+        if (next_start_time - last_end_time).total_seconds() > interval_length_in_sec:
+            if next_start_time > end_time:
+                break
+            else:
+                output.append((last_end_time, next_start_time))
         last_end_time = datetime.strptime(event['end_time'], "%I:%M %p")
+        last_end_time = datetime(today.year, today.month, today.day, last_end_time.hour, last_end_time.minute, 0)
+    if end_time > last_end_time:
+        output.append((last_end_time, end_time))
+    print "free time intervals", output
     return output
     
