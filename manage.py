@@ -245,7 +245,7 @@ def receivedMessage(event):
             sendMorningCard(facebook_id)
 
         elif 'weather' in text:
-            sendWeather(facebook_id)
+            sendWeather(facebook_id) 
 
         elif 'test distance please' in text:
             google_maps.walking_time_from_home(
@@ -253,7 +253,24 @@ def receivedMessage(event):
                 "1 Hacker Way",
                 google_cal.today_at(19, 0)
             )
+        elif 'remind' in text:
+            print 'IN REMINDER ELIF!!!'
+            user = User.query.get(facebook_id)
+            print('1')
+            task = text.replace('remind me to ', '')
+            print('2')
+            user.reminders = user.reminders + '$'+task
+            print('3')
+            db.session.add(user)
+            try:
+                print 'saving'
+                db.session.commit()
+            except IntegrityError:
+                print 'error'
+                db.session.rollback()
 
+            print 'right before sending text message'
+            sendTextMessage(facebook_id, "Done - I'll remind you during your ride home tonight to " + task)
         elif 'fuck' in text or 'shit' in text or 'damn' in text:
             sendTextMessage(facebook_id, "Watch your language!")
 
@@ -403,16 +420,35 @@ def receivedPostback(event):
         # Request ride
         print "CALLING LYFT HERE"
         isMorning = ("work" in payload)
-        lyft_request_ride(facebook_id, isMorning)
+        # lyft_request_ride(facebook_id, isMorning)
 
         if isMorning:
+            print 'MORNING'
             sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes! Also, check out what's going on in the world while you wait:")
+            
+            # Send news
+            response = nyt_api.get_top_articles(5)
+            sendCarouselMessage(facebook_id, response)
         else:
-            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes. Also, check out what's going on in the world while you wait:")
+            print 'AFTERNOON REMINDERS'
+            # Prep reminders
+            reminders_string = ''
+            print 'reminders_string'
+            print reminders_string
+
+            reminders = User.query.get(facebook_id).reminders
+            if reminders is not None:
+                reminders_list = reminders.split('$')
+                for reminder in reminders_list:
+                    if reminder != '':
+                        reminders_string += '- ' + reminder + '\n'
+
+            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes.")
+            
+            if reminders_string != '':
+                reminders_string = 'Here\'s what you wanted me to remind you about today: ' + reminders_string 
+                sendTextMessage(facebook_id, reminders_string)
         
-        # Send news
-        response = nyt_api.get_top_articles(5)
-        sendCarouselMessage(facebook_id, response)
 
     # create cal event from yelp
     else:
