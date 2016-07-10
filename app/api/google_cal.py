@@ -11,7 +11,7 @@ from app import User
 
 def oauth(facebook_id):
     user = User.query.get(facebook_id)
-    session['facebook_id'] = facebook_id
+    flask.session['facebook_id'] = facebook_id
     if not user:
         return "User not found"
     print "google credentials", user.google_credentials
@@ -101,6 +101,7 @@ def get_events_today(facebook_id):
             end = datetime.strptime(end.split("T")[1].split("-")[0], "%H:%M:%S")
 
             eventObj = {
+                "location": event['location']
                 "start_time": start.strftime("%I:%M %p"), 
                 "end_time": end.strftime("%I:%M %p"),
                 "title": event["summary"]
@@ -152,5 +153,5 @@ def get_free_time(facebook_id, interval_length_in_sec, start_time, end_time, eve
 
     if events is None or len(events) == 0:
         return [(now, end_of_today)]
-    start_time = events
+    start_time = datetime.strptime(events[0]['start_time'], "%I:%M %p")
     
