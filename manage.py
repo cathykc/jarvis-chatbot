@@ -81,7 +81,7 @@ def foursquare_push():
     location = 'Menlo Park'
     response = yelp_api.get_top_locations_swarm(food_type, 5, location)
     sendTextMessage('1243735802327809', "Since you are in Menlo park, here are the best places to get " +
-                    food_type + "around you: ")
+                    food_type + " around you: ")
     sendCarouselMessage('1243735802327809', response)
 
     return ''
@@ -703,14 +703,14 @@ def sendLyftCTA(facebook_id, isMorning):
         buttonsList = [{
             "type" : "postback",
             "payload" : "CALL_LYFT work",
-            "title" : "Lyft me to work"
+            "title" : "Lyft Me to Work"
         }]
         sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
     else:
         buttonsList = [{
             "type" : "postback",
             "payload" : "CALL_LYFT home",
-            "title" : "Lyft me home"
+            "title" : "Lyft Me Home"
         }]
         sendButtonMessage(facebook_id, 'Need a ride home?', buttonsList)
 
