@@ -296,9 +296,7 @@ def receivedMessage(event):
                 parsed_time = None
             else:
                 num_time = int(time)
-                print num_time
                 parsed_time = google_cal.today_at(num_time, 0).isoformat()
-                print parsed_time
             response = yelp_api.get_top_locations(food_type, 3, location,
                                                   parsed_time, who)
             sendTextMessage(facebook_id, "Here are the best places to get " +
@@ -397,6 +395,7 @@ def receivedPostback(event):
         response = nyt_api.get_top_articles(5)
         sendCarouselMessage(facebook_id, response)
 
+    # create cal event from yelp
     else:
         print payload
         parsed = json.loads(payload)
