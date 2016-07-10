@@ -31,7 +31,6 @@ def get_top_locations(type, number, location, time, who):
         payload['address'] = business.location.display_address
         payload['time'] = time
         payload['person'] = who
-        json_payload = json.dumps(payload)
         #count = 0
         #for person in who:
         #    payload['person' + count] = who[count]
@@ -45,7 +44,7 @@ def get_top_locations(type, number, location, time, who):
 
         buttons = [{"type": "postback", "title" : "Choose this location",
                     "payload"
-                    : json_payload}]
+                    : payload}]
         message["buttons"] = buttons
         locations.append(message)
     return locations
