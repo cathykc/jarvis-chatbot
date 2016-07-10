@@ -350,9 +350,11 @@ def callSendAPI(messageData):
 
 def setup_db():
     with app.app_context():
+        print app
         db.drop_all()
         db.create_all()
         db.session.commit()
+    print "database is set up!"
 
 
 if __name__ == "__main__":
