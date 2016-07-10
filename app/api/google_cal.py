@@ -85,11 +85,14 @@ def get_events_today(facebook_id):
     output = []
     if not events:
         print 'No upcoming events found.'
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print start, event['summary']
-        output.append(event['summary'])
-    return ", ".join(output)
+    else:
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            print start, event['summary']
+
+            eventObj = {"start_time":start, "title":event["summary"]}
+            output.append(eventObj)
+    return output
     
 # summary: String, location: String, start_time: datetime string, emails: [String]
 # returns true on success i hope
