@@ -152,7 +152,7 @@ def message_test(facebook_id=None, message=""):
 @app.route("/lyft_trigger")
 def lyft_trigger():
     facebook_id = request.args.get('facebook_id')
-    send_lyft_cta(facebook_id)    
+    sendLyftCTA(facebook_id)    
     return "dd"
 
 @app.route("/scheduler_trigger/<event_id>")
@@ -163,22 +163,13 @@ def scheduler_trigger(event_id=None):
     enum = event.trigger_enum
 
     if enum == 1:
-        # trigger something
-        sendTextMessage(facebook_id, "trigger")
+        # Morning info card
+        sendMorningCard(facebook_id)
     else:
         sendTextMessage(facebook_id, "wasn't handled")
 
     return ''
 
-
-# This mesasge sends a Lyft deeplink CTA to a recipient through messenger
-def send_lyft_cta(facebook_id):
-    buttonsList = [{
-        "type" : "postback",
-        "payload" : "CALL_LYFT",
-        "title" : "Get me a Lyft home"
-    }]
-    sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
 
 
 # *****************************************************************************
@@ -469,6 +460,15 @@ def sendEventDigest(facebook_id):
     busy = am_i_busy(len(events))
     sendTextMessage(facebook_id, busy + "Here's what you're doing today:\n\n"+
                     "\n".join(events_formatted))
+
+# This mesasge sends a Lyft deeplink CTA to a recipient through messenger
+def sendLyftCTA(facebook_id):
+    buttonsList = [{
+        "type" : "postback",
+        "payload" : "CALL_LYFT",
+        "title" : "Get me a Lyft home"
+    }]
+    sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
 
 def am_i_busy(num):
     if num <= 2:

@@ -9,6 +9,8 @@ class Event(db.Model):
 
     trigger_enum = db.Column(db.Integer)
     # 1 - morning info card
+    # 2 - morning lyft
+    # 3 - afternoon lyft
 
     def __init__(self, facebook_id):
         self.facebook_id = facebook_id
