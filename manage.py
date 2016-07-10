@@ -287,6 +287,7 @@ def receivedMessage(event):
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
         elif 'lyft' in text:
+            print("REACHED LYFTTTTTT")
             # Request ride
             isMorning = lyft_request_ride(facebook_id)
 
