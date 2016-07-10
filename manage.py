@@ -285,8 +285,16 @@ def receivedMessage(event):
 
             sendCarouselMessage(facebook_id, response)
 
+        elif 'more articles' in text:
+            response = nyt_api.get_top_articles(10)
+            sendTextMessage(facebook_id, "I've added five more "
+                                           "news stories for you! ")
+            sendCarouselMessage(facebook_id, response)
+
         elif 'news' in text:
-            response = nyt_api.get_top_articles()
+            response = nyt_api.get_top_articles(5)
+            sendTextMessage(facebook_id, "Here are todays five most popular "
+                                         "news stories: ")
             sendCarouselMessage(facebook_id, response)
 
         elif 'help me' in text:
@@ -327,7 +335,7 @@ def receivedMessage(event):
             sendTextMessage(facebook_id, "Sorry, I don't quite understand what "
                                          "you "
                                          "said! Type "
-                                             "help me for help.")
+                                             " \'help me\' for help.")
 
     elif 'attachments' in message:
         sendTextMessage(facebook_id, "Attachment received.")
