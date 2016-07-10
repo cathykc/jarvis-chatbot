@@ -101,7 +101,7 @@ def get_events_today(facebook_id):
             end = datetime.strptime(end.split("T")[1].split("-")[0], "%H:%M:%S")
 
             eventObj = {
-                "location": event['location'],
+                "location": event['location'] if 'location' in event else None,
                 "start_time": start.strftime("%I:%M %p"), 
                 "end_time": end.strftime("%I:%M %p"),
                 "title": event["summary"]
@@ -141,6 +141,7 @@ def create_event(facebook_id, summary, location, start_time, end_time, emails):
     created_event = service.events().insert(calendarId='primary', body=event).execute()
     return True
 
+# overlapping events will lead to unpredictable behavior
 def get_free_time(facebook_id, interval_length_in_sec, start_time, end_time, events):
     now = datetime.now()
     if start_time is None:
@@ -153,5 +154,13 @@ def get_free_time(facebook_id, interval_length_in_sec, start_time, end_time, eve
 
     if events is None or len(events) == 0:
         return [(now, end_of_today)]
-    start_time = datetime.strptime(events[0]['start_time'], "%I:%M %p")
+    output = []
+    last_end_time = start_time
+    for event in events:
+        next_start_time = datetime.strptime(event['start_time'], "%I:%M %p")
+        print next_start_time - last_end_time
+        if (next_start_time - last_end_time) > timedelta(seconds=interval_length_in_sec):
+            output.append((last_end_time, next_start_time))
+        last_end_time = datetime.strptime(event['end_time'], "%I:%M %p")
+    return output
     
