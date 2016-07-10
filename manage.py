@@ -259,13 +259,18 @@ def receivedMessage(event):
             print('1')
             task = text.replace('remind me to ', '')
             print('2')
-            user.reminders = user.reminders + '$'+task
+            print(user.reminders)
+            print(task)
+            if user.reminders is None:
+                user.reminders = task
+            else:
+                user.reminders = user.reminders + '$'+task
             print('3')
             db.session.add(user)
             try:
                 print 'saving'
                 db.session.commit()
-            except IntegrityError:
+            except IntegrityError:  
                 print 'error'
                 db.session.rollback()
 
@@ -446,7 +451,7 @@ def receivedPostback(event):
             sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes.")
             
             if reminders_string != '':
-                reminders_string = 'Here\'s what you wanted me to remind you about today: ' + reminders_string 
+                reminders_string = 'Here\'s what you wanted me to remind you about today:\n\n' + reminders_string 
                 sendTextMessage(facebook_id, reminders_string)
         
 
