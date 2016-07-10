@@ -210,6 +210,7 @@ def receivedMessage(event):
     message = event['message']
 
     print facebook_id
+    print "---------------------------------"
     print message
 
     if 'text' in message:
