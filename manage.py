@@ -79,7 +79,7 @@ def foursquare_push():
     # Schedule a notification for ice cream in 1 hour
     food_type = 'Ice Cream'
     location = 'Menlo Park'
-    response = get_top_locations_swarm(food_type, 5, location)
+    response = yelp_api.get_top_locations_swarm(food_type, 5, location)
     sendTextMessage('1243735802327809', "Here are the best places to get " +
                     food_type + "in " + location + ":  ")
     sendCarouselMessage(facebook_id, response)
