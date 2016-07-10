@@ -145,7 +145,7 @@ def lyft_trigger():
 def send_lyft_cta(facebook_id):
     buttonsList = [{
         "type" : "postback",
-        "payload" : "" + facebook_id,
+        "payload" : "CALL_LYFT",
         "title" : "Get me a Lyft home"
     }]
     sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
@@ -285,16 +285,6 @@ def receivedMessage(event):
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
 
-        elif 'lyft' in text:
-            print("REACHED LYFTTTTTT")
-            # Request ride
-            isMorning = lyft_request_ride(facebook_id)
-
-            if isMorning:
-                sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes!")
-            else:
-                sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
-
         elif 'hey jarvis' in text:
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
@@ -357,7 +347,15 @@ def receivedPostback(event):
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
         sendCarouselMessage(facebook_id, [element])
+    elif payload == 'CALL_LYFT':
+        # Request ride
+        isMorning = lyft_request_ride(facebook_id)
 
+        if isMorning:
+            sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes!")
+        else:
+            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
+        
     else:
         print payload
         parsed = json.loads(payload)
