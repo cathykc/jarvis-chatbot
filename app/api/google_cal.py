@@ -50,6 +50,12 @@ def oauth2callback(facebook_id):
         #flask.session['google_credentials'] = credentials.to_json()
         return flask.redirect(flask.url_for('dashboard', facebook_id=facebook_id))
 
+def now():
+    return datetime.now().isoformat()
+
+def minutes_later(minutes):
+    return (datetime.now() + timedelta(minutes=minutes)).isoformat()
+
 def get_events_today(facebook_id):
     user = User.query.get(facebook_id)
     if not user or not user.google_credentials:
@@ -79,14 +85,15 @@ def get_events_today(facebook_id):
     return ", ".join(output)
     
 # summary: String, location: String, start_time: datetime string, emails: [String]
-def create_event(summary, location, start_time, end_time, emails):
+# returns true on success i hope
+def create_event(facebook_id, summary, location, start_time, end_time, emails):
     user = User.query.get(facebook_id)
     if not user or not user.google_credentials:
-        return "Permission denied. Please OAuth for Google Calendar."
+        return False
     credentials = client.OAuth2Credentials.from_json(json.loads(user.google_credentials))
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
-    
+
     attendees = []
     for email in emails:
         attendees.append({
@@ -96,12 +103,15 @@ def create_event(summary, location, start_time, end_time, emails):
         'summary': summary,
         'location': location,
         'start': {
-            'dateTime': start_time
+            'dateTime': start_time,
+            'timeZone': 'America/Los_Angeles'
         },
         'end': {
-            'dateTime': end_time
+            'dateTime': end_time,
+            'timeZone': 'America/Los_Angeles'
         },
         'attendees': attendees
     }
 
     created_event = service.events().insert(calendarId='primary', body=event).execute()
+    return True
