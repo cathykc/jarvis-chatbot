@@ -2,12 +2,13 @@ from database import db
 from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from app.api import google_cal, yelp_api, lyft, nyt_api, triggers
+from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, triggers
 import json
 import requests
 import os
 import uuid
 import parse_query
+import datetime
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
@@ -185,6 +186,8 @@ def receivedMessage(event):
 
     print facebook_id
     print message
+    r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
+    first_name = r.json()["first_name"]
 
     if 'text' in message:
         # sendTextMessage(facebook_id, "Text received.")
@@ -192,6 +195,15 @@ def receivedMessage(event):
 
         if 'ping' in text:
              sendTextMessage(facebook_id, "pong")
+
+        elif 'weather' in text:
+            print "WEAETHER WETHER WEATHER"
+            # TO DO : check if morning - hardcode morning for now
+            # currently hard-coded (ideally get from lyft addrress)
+            weather = weather_api.getWeatherConditions("San Francisco")
+            sendTextMessage(facebook_id, "Good morning {}! Today in {} it is {} with a temperature of {}.".format(first_name, weather["city"], weather["weather"], weather["temperature"]))
+
+
 
         elif "my events" in text:
             sendTextMessage(facebook_id, google_cal.get_events_today(facebook_id))
