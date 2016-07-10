@@ -81,7 +81,7 @@ def foursquare_push():
     location = 'Menlo Park'
     response = yelp_api.get_top_locations_swarm(food_type, 5, location)
     sendTextMessage('1243735802327809', "Since you are in Menlo park, here are the best places to get " +
-                    food_type + "around you: ")
+                    food_type + " around you: ")
     sendCarouselMessage('1243735802327809', response)
 
     return ''
@@ -194,17 +194,21 @@ def scheduler_trigger(event_id=None):
     elif enum == 4:
         metadata = json.loads(event.metadata_json)
         sendWalkingMessage(facebook_id, metadata)
+        db.session.delete(event)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
     elif enum == 5:
         metadata = json.loads(event.metadata_json)
         sendDrivingMessage(facebook_id, metadata)
+        db.session.delete(event)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
     else:
         sendTextMessage(facebook_id, "wasn't handled")
-
-    db.session.delete(event)
-    try:
-        db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
     return ''
 
 
@@ -474,6 +478,7 @@ def receivedPostback(event):
     payload = event['postback']['payload']
 
     if payload is None or payload == "noop" or payload == "SCHEDULE_EVENT":
+        sendTextMessage(facebook_id, "Sounds good!")
         return
 
     if payload == "GET_STARTED":
@@ -692,14 +697,14 @@ def sendLyftCTA(facebook_id, isMorning):
         buttonsList = [{
             "type" : "postback",
             "payload" : "CALL_LYFT work",
-            "title" : "Lyft me to work"
+            "title" : "Lyft Me to Work"
         }]
         sendButtonMessage(facebook_id, 'Need a ride to work?', buttonsList)
     else:
         buttonsList = [{
             "type" : "postback",
             "payload" : "CALL_LYFT home",
-            "title" : "Lyft me home"
+            "title" : "Lyft Me Home"
         }]
         sendButtonMessage(facebook_id, 'Need a ride home?', buttonsList)
 
