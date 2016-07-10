@@ -293,15 +293,12 @@ def receivedMessage(event):
 
             who = parse_query.getPerson(text)
             time = parse_query.getTime(text)
-            # parse the int
             num_time = int(time)
-            parsed_time = google_cal.today_at(time, 0)
+            parsed_time = google_cal.today_at(num_time, 0)
             response = yelp_api.get_top_locations(food_type, 3, location,
                                                   parsed_time, who)
             sendTextMessage(facebook_id, "Here are the best places to get " +
                             food_type + "in " + location + ":  ")
-
-
             sendCarouselMessage(facebook_id, response)
 
         elif 'more articles' in text:
