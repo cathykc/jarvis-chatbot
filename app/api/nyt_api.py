@@ -25,4 +25,3 @@ def get_top_articles(num):
         articles.append(article)
     return articles
 
-get_top_articles()
