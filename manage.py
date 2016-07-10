@@ -43,12 +43,24 @@ def dashboard(facebook_id=None):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-    return render_template('dashboard.html', facebook_id=facebook_id)
 
-@app.route("/lyft_deeplink")
-def lyft_deeplink():
+    # Check if lyft is connected
+    lyft_connected_flag = False
+    if user.lyft_access_token is not None:
+        lyft_connected_flag = True
+
+    # Check if google cal is connected
+    google_cal_connected_flag = False
+    if user.google_credentials is not None:
+        google_cal_connected_flag = True
+
+    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag)
+
+@app.route("/lyft_request_ride")
+def lyft_request_ride():
     # Determine what time of day it is
     isMorning = True
+
 
     # Get the user id
 
@@ -68,23 +80,10 @@ def lyft_deeplink():
 
 @app.route("/lyft_auth_redirect")
 def lyft_auth():
-    # auth lyft
-    (access_token, refresh_token) = lyft.authorize(request)
-
-    # Get signal
-    (go_home_time,
-            home_address,
-            home_lat,
-            home_long,
-            go_to_work_time,
-            work_address,
-            work_lat,
-            work_long) = lyft.analyze(access_token, refresh_token)
-
-    # Store access_token and refresh_token in db
-    fbid = session['fbid']
-
-    return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
+    facebook_id = session['fbid']
+    if facebook_id == None:
+        return "Click in through Messenger"
+    return lyft.setup(request, facebook_id)
 
 @app.route("/google_auth/<facebook_id>")
 def google_auth(facebook_id=None):
