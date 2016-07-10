@@ -259,13 +259,15 @@ def receivedMessage(event):
             print('1')
             task = text.replace('remind me to ', '')
             print('2')
+            print(user.reminders)
+            print(task)
             user.reminders = user.reminders + '$'+task
             print('3')
             db.session.add(user)
             try:
                 print 'saving'
                 db.session.commit()
-            except IntegrityError:
+            except IntegrityError:  
                 print 'error'
                 db.session.rollback()
 
