@@ -253,7 +253,18 @@ def receivedMessage(event):
                 "1 Hacker Way",
                 google_cal.today_at(19, 0)
             )
+        elif 'remind me to' in text:
+            user = User.query.get(facebook_id)
+            task = text.replace('remind me to ', '')
+            user.reminders += '$'+task
 
+            db.session.add(user)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
+            sendTextMessage(facebook_id, "Done - I'll remind you during your ride home tonight to " + task)
         elif 'fuck' in text or 'shit' in text or 'damn' in text:
             sendTextMessage(facebook_id, "Watch your language!")
 

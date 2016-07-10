@@ -17,6 +17,8 @@ class User(db.Model):
     lyft_work_lat = db.Column(db.Float)
     lyft_work_long = db.Column(db.Float)
     lyft_go_to_work_time = db.Column(db.DateTime)
+
+    reminders = db.Column(db.String)
     
 
     def __init__(self, facebook_id):
