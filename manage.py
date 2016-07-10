@@ -609,6 +609,7 @@ def sendEventDigest(facebook_id):
                     "\n".join(events_formatted))
 
 def scheduleCalReminderEvent(event, facebook_id):
+    print "scheduling cal reminder events"
     if 'location' not in event:
         return
     driving_time_in_sec = google_maps.driving_time_from_work(facebook_id, event['location'])['value']
@@ -637,6 +638,7 @@ def scheduleCalReminderEvent(event, facebook_id):
 
     db.session.add(driving_event)
     db.session.add(walking_event)
+    print "created driving and walking events!"
     try:
         db.session.commit()
     except IntegrityError:
