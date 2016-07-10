@@ -3,6 +3,7 @@ from app.models import User, Event
 import app
 from flask import Flask, request, render_template, session, url_for
 from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare, google_maps
+from sqlalchemy.exc import IntegrityError
 import json
 import requests
 import os
@@ -619,7 +620,6 @@ def sendEventDigest(facebook_id):
     events_formatted = []
     for event in events:
         events_formatted.append(event["start_time"] + ": " + event["title"])
-        
         scheduleCalReminderEvent(event, facebook_id)
 
 
@@ -630,32 +630,28 @@ def sendEventDigest(facebook_id):
 def scheduleCalReminderEvent(event, facebook_id):
     print "scheduling cal reminder events"
     print event
-    if 'location' not in event:
-        return
+    if 'location' not in event or event['location'] is None:
+        return False
     today = datetime.today()
     driving_time_in_sec = google_maps.driving_time_from_work(facebook_id, event['location'])['value']
     walking_time_in_sec = google_maps.walking_time_from_work(facebook_id, event['location'])['value']
     event_start_time = datetime.strptime(event['start_time'], "%I:%M %p")
-    event_start_time = datetime(today.year, today.month, today.day, next_start_time.hour, next_start_time.minute, 0)
+    event_start_time = datetime(today.year, today.month, today.day, event_start_time.hour, event_start_time.minute, 0)
     driving_alert_time = event_start_time - timedelta(seconds=driving_time_in_sec)
     walking_alert_time = event_start_time - timedelta(seconds=walking_time_in_sec)
 
-    driving_event = Event(
-        facebook_id=facebook_id,
-        trigger_enum=5,
-        send_timestamp=driving_alert_time,
-        metadata_json=event
-    )
+    driving_event = Event(facebook_id=facebook_id)
+    driving_event.trigger_enum = 5
+    driving_event.send_timestamp = driving_alert_time
+    driving_event.metadata_json = json.dumps(event)
 
     walking_metadata = event.copy()
     walking_metadata['drive_id'] = driving_event.id
 
-    walking_event = Event(
-        facebook_id=facebook_id,
-        trigger_enum=4,
-        send_timestamp=walking_alert_time,
-        metadata_json=walking_metadata
-    )
+    walking_event = Event(facebook_id=facebook_id)
+    walking_event.trigger_enum = 4
+    walking_event.send_timestamp = walking_alert_time
+    walking_event.metadata_json = json.dumps(walking_metadata)
 
     db.session.add(driving_event)
     db.session.add(walking_event)
