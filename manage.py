@@ -74,6 +74,9 @@ def foursquare_push():
     checkin_obj = request.args.get('checkin')
     print(checkin_obj)
 
+    data = json.loads(request.data)
+    print(data)
+
     return ''
 
 @app.route("/scheduler/<facebook_id>")
