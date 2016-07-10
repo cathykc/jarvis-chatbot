@@ -283,6 +283,8 @@ def receivedPostback(event):
 
     else:
         print payload
+        print "THE FOLLOWING IS THE PARSED JSON"
+        print json.parse(payload)
         sendTextMessage(facebook_id, payload)
 
 
