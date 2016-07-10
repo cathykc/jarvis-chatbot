@@ -414,28 +414,32 @@ def receivedPostback(event):
         # Request ride
         print "CALLING LYFT HERE"
         isMorning = ("work" in payload)
-        lyft_request_ride(facebook_id, isMorning)
+        # lyft_request_ride(facebook_id, isMorning)
 
         if isMorning:
+            print 'MORNING'
             sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes! Also, check out what's going on in the world while you wait:")
             
             # Send news
             response = nyt_api.get_top_articles(5)
             sendCarouselMessage(facebook_id, response)
         else:
+            print 'AFTERNOON REMINDERS'
             # Prep reminders
             reminders_string = ''
 
             reminders = User.query.get(facebook_id).reminders
-            reminders_list = reminders.split('$')
-            for reminder in reminders_list:
-                if reminder != '':
-                    reminders_string += '- ' + reminder + '\n'
+            if reminders is not None:
+                reminders_list = reminders.split('$')
+                for reminder in reminders_list:
+                    if reminder != '':
+                        reminders_string += '- ' + reminder + '\n'
 
+            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes.")
+            
             if reminders_string != '':
-                reminders_string = ' Here\'s what you wanted me to remind you about today: ' + reminders_string 
-            sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes." + reminders_string)
-        
+                reminders_string = 'Here\'s what you wanted me to remind you about today: ' + reminders_string 
+                sendTextMessage(facebook_id, reminders_string)
         
 
     # create cal event from yelp
