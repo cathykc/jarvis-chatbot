@@ -297,16 +297,8 @@ def receivedMessage(event):
             help = "Try asking me to do the following commands: "
             sendTextMessage(facebook_id, help)
 
-        elif 'lyft' in text:
-            print("REACHED LYFTTTTTT")
-            # Request ride
-            isMorning = lyft_request_ride(facebook_id)
-
-            if isMorning:
-                sendTextMessage(facebook_id, "I got you a Lyft to work, it'll be here in a few minutes!")
-            else:
-                sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
-
+        elif 'hey jarvis' in text:
+            sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
         elif "what's up" in text or "whats up" in text:
             sendTextMessage(facebook_id, "Not much! Hope you're having a "
