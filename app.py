@@ -7,6 +7,7 @@ import json
 import requests
 import os
 import uuid
+import parse_query
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
@@ -195,21 +196,38 @@ def receivedMessage(event):
         # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
             split = text.split()
-            location = split[3]
-            food_type = split[1]
+            location = parse_query.getPlace(text)
+            food_type = parse_query.getFood(text)
+            if food_type is None:
+                sendTextMessage(senderID, "Tell me what type of food you want to "
+                                          "schedule! Ex: 'scheudle coffee in "
+                                          "San Francisco")
+                return
+            elif location is None:
+                sendTextMessage(senderID, "Where do you want to get" +
+                                food_type + "? Try saying: 'schedule " +
+                                food_type_+ " in San Francisco' ")
+                return
             response = yelp_api.get_top_locations(food_type, 3, location)
-            sendTextMessage(facebook_id, "Here are the best places to get " +
+            sendTextMessage(senderID, "Here are the best places to get " +
                             food_type + " in " + location + ":  ")
-            sendCarouselMessage(facebook_id, response)
+
+            with_who = parse_query.getPerson(text)
+            what_time = parse_query.getTime()
+            sendCarouselMessage(senderID, response)
 
         # nyt
         elif 'nyt' in text:
-            response = nyt_api.get_top_articles()
-            sendTextMessage(facebook_id, "Here are the most popular articles "
-                                      "today: ")
-            sendCarouselMessage(facebook_id, response)
+            response = yelp_api.get_top_articles()
+            sendCarouselMessage(senderID, response)
+
+        elif 'SOS' or 'sos' in text:
+            help = "Try asking me to do the following commands: "
+            sendTextMessage(senderID, help)
+
         else:
-            sendTextMessage(facebook_id, "catch all response")
+            sendCarouselMessage(senderID, "Sorry, I don't understand! Type "
+                                          "SOS for help.")
 
     elif 'attachments' in message:
         sendTextMessage(facebook_id, "Attachment received.")
