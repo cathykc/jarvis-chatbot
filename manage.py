@@ -4,6 +4,7 @@ import app
 from flask import Flask, request, render_template, session, url_for
 from app.api import google_cal, yelp_api, lyft, nyt_api, triggers
 import json
+from datetime import datetime, timedelta
 import requests
 import os
 import uuid
@@ -196,6 +197,17 @@ def receivedMessage(event):
         elif "my events" in text:
             sendTextMessage(facebook_id, google_cal.get_events_today(facebook_id))
 
+        elif "event right now" in text:
+            google_cal.create_event(
+                facebook_id, 
+                "Test Event",
+                "1 Hacker Way",
+                google_cal.now(),
+                google_cal.minutes_later(60),
+                ["danielzh@sas.upenn.edu"]
+            )
+
+        # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
             split = text.split()
             location = parse_query.getPlace(text)
