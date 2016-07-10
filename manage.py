@@ -292,8 +292,13 @@ def receivedMessage(event):
 
             who = parse_query.getPerson(text)
             time = parse_query.getTime(text)
-            num_time = int(time)
-            parsed_time = google_cal.today_at(num_time, 0)
+            if time is None:
+                parsed_time = None
+            else:
+                num_time = int(time)
+                print num_time
+                parsed_time = google_cal.today_at(num_time, 0)
+                print parsed_time
             response = yelp_api.get_top_locations(food_type, 3, location,
                                                   parsed_time, who)
             sendTextMessage(facebook_id, "Here are the best places to get " +
