@@ -17,8 +17,8 @@
     <div class="container">
         <h2>List of Events</h2>
         {% for e in events %}
-            {{e.id}} - {{ e.facebook_id }} - {{ e.send_timestamp }} - {{ e.trigger_enum}}
-            <button data-id='{{ e.id }}'>Trigger</button>
+            {{e.id}} - {{ e.facebook_id }} - {{ e.send_timestamp.hour }}:{{ e.send_timestamp.minute }} {{e.send_timestamp.tzinfo}} - {{ e.trigger_enum}}
+            <button data-id='{{ e.id }}'>Trigger</button><br><br>
         {% endfor %}
     </div>
 

@@ -2,7 +2,7 @@ from database import db
 
 class User(db.Model):
     id = db.Column(db.Integer)
-    facebook_id = db.Column(db.Integer, primary_key=True)
+    facebook_id = db.Column(db.BigInteger, primary_key=True)
     google_credentials = db.Column(db.String)
 
     lyft_access_token = db.Column(db.String)

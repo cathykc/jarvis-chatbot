@@ -1,6 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
-from datetime import datetime
+from datetime import datetime, timedelta
 from app import User, Event
 from database import db
 from sqlalchemy.exc import IntegrityError
@@ -54,7 +54,8 @@ def schedule_morning_info_card(go_to_work_time, facebook_id):
     morning_info_card_time = datetime.now()
     print 'current_time'
     print morning_info_card_time.hour
-    morning_info_card_time.replace(hour=8)
+    morning_info_card_time = morning_info_card_time.replace(hour=go_to_work_time, minute=0)
+    morning_info_card_time = morning_info_card_time + timedelta(hours=-1)
 
     event.send_timestamp = morning_info_card_time
     event.trigger_enum = 1
@@ -72,7 +73,8 @@ def schedule_morning_lyft(go_to_work_time, facebook_id):
 
     # Create datetime out of go_to_work_time
     morning_info_card_time = datetime.now()
-    morning_info_card_time = morning_info_card_time + datetime.timedelta(minutes=-30)
+    morning_info_card_time = morning_info_card_time.replace(hour=go_to_work_time, minute=0)
+    morning_info_card_time = morning_info_card_time + timedelta(minutes=-30)
 
     event.send_timestamp = morning_info_card_time
     event.trigger_enum = 2
@@ -90,7 +92,8 @@ def schedule_afternoon_lyft(go_home_time, facebook_id):
 
     # Create datetime out of go_to_work_time
     afternoon_info_card_time = datetime.now()
-    afternoon_info_card_time = afternoon_info_card_time + datetime.timedelta(minutes=-30)
+    afternoon_info_card_time = afternoon_info_card_time + timedelta(minutes=-30)
+    afternoon_info_card_time = afternoon_info_card_time.replace(hour=go_home_time, minute=0)
 
     event.send_timestamp = afternoon_info_card_time
     event.trigger_enum = 3
@@ -187,11 +190,11 @@ def analyze(access_token, refresh_token):
     json = get_ride_history_json(access_token, refresh_token)
 
     # Signals we want to get:
-    go_to_work_time = 0
+    go_to_work_time = 9
     home_address = 0
     home_lat = 0
     home_long = 0
-    go_home_time = 0
+    go_home_time = 18
     work_lat = 0
     work_long = 0
 
