@@ -462,7 +462,7 @@ def receivedPostback(event):
     facebook_id = event['sender']['id']
     payload = event['postback']['payload']
 
-    if payload is None or payload == "":
+    if payload is None or payload == "noop":
         return
 
     if payload == "GET_STARTED":
@@ -550,8 +550,8 @@ def receivedPostback(event):
 
 def sendWalkingMessage(facebook_id, metadata):
     payload = {
-        payload: "WALK",
-        drive_id: metadata['drive_id']
+        'payload': "WALK",
+        'drive_id': metadata['drive_id']
     }
     buttonList = [{
             'type': "postback",
@@ -577,7 +577,7 @@ def sendDrivingMessage(facebook_id, metadata):
         }, {
             'type': "postback",
             'title': "I'm going to take the car instead.",
-            'payload': ""
+            'payload': "noop"
         }
     ]
     
