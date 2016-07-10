@@ -176,6 +176,7 @@ def webhook():
                     if 'optin' in message:
                         pass
                     elif 'message' in message:
+                        print " IN MESSAGE MESSAGE"
                         receivedMessage(message)
                     elif 'delivery' in message:
                         pass
@@ -222,6 +223,7 @@ def receivedMessage(event):
              sendTextMessage(facebook_id, "pong")
 
         elif 'weather' in text:
+            print "HELLO HELLO WEATHER WEATHER"
             # TO DO : check if morning - hardcode morning for now
             # currently hard-coded (ideally get from lyft addrress)
             weather = weather_api.getWeatherConditions("San Francisco")
