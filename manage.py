@@ -12,7 +12,7 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') if os.environ.get('DATABASE_URL') else "sqlite:////tmp/test.db"
 db.init_app(app)
 app.secret_key = str(uuid.uuid4())
 
@@ -28,6 +28,9 @@ manager.add_command('db', MigrateCommand)
 @app.route("/")
 @app.route("/<facebook_id>")
 def dashboard(facebook_id=None):
+    # I have never done something so hacky in my life @cathy
+    if facebook_id == 'favicon.ico':
+        return ""
     if facebook_id == None:
         return render_template('login.html')
     session['fbid'] = facebook_id
