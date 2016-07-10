@@ -537,12 +537,14 @@ def receivedPostback(event):
                 event = Event.query.get(drive_id)
                 if event is None:
                     return
-                db.session.delete(drive_id)
+                db.session.delete(event)
                 try:
                     db.session.commit()
                 except IntegrityError:
                     db.session.rollback()
-
+                sendTextMessage(facebook_id, "Good on you! You're also only 1265 steps away from your goal for this week - this walk will complete your goal!")
+                return
+                
                 #Get scheduled async, remove it
         print parsed['address']
         print parsed['title']
