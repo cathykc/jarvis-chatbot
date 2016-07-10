@@ -502,7 +502,7 @@ def receivedPostback(event):
             print time
             d = datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%f")
             end_time = google_cal.minutes_later(d, 60).isoformat()
-            start_to_cal = str(d)
+            start_to_cal = d.isoformat()
             print start_to_cal
             print end_time
             print parsed['summary']
