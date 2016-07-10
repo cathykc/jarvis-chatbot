@@ -440,12 +440,10 @@ def sendWeather(facebook_id):
 def sendEventDigest(facebook_id):
     events = google_cal.get_events_today(facebook_id)
     events_formatted = []
-    count = 0
     for event in events:
-        count += 1
         events_formatted.append(event["start_time"] + ": " + event["title"])
 
-    busy = am_i_busy(count)
+    busy = am_i_busy(len(events))
     sendTextMessage(facebook_id, busy + "Here's what you're doing today:\n\n"+
                     "\n".join(events_formatted))
 
