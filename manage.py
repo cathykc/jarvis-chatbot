@@ -223,13 +223,19 @@ def receivedMessage(event):
         if 'ping' in text:
              sendTextMessage(facebook_id, "pong")
 
+        elif 'hey' in text or 'hi' in text:
+            sendTextMessage(facebook_id, "Hey, " + first_name + "!")
+
+        elif 'how are you' in text or 'how are you' in text or 'how\'re you' \
+                in text:
+            sendTextMessage(facebook_id, "I'm good! I hope you are, too!")
+
         elif 'weather' in text:
             print "HELLO HELLO WEATHER WEATHER"
             # TO DO : check if morning - hardcode morning for now
             # currently hard-coded (ideally get from lyft addrress)
             weather = weather_api.getWeatherConditions("San Francisco")
             sendTextMessage(facebook_id, "Good morning {}! Today in {} it is {} with a temperature of {}.".format(first_name, weather["city"], weather["weather"], weather["temperature"]))
-
 
         elif "my events" in text:
             sendTextMessage(facebook_id, google_cal.get_events_today(facebook_id))
@@ -298,8 +304,6 @@ def receivedMessage(event):
             else:
                 sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
 
-        elif 'hey jarvis' in text or 'hey' in text or 'hi' in text:
-            sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
         elif "what's up" in text or "whats up" in text:
             sendTextMessage(facebook_id, "Not much! Hope you're having a "
