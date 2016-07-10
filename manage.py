@@ -173,7 +173,12 @@ def scheduler_trigger(event_id=None):
         sendDrivingMessage(facebook_id, metadata)
     else:
         sendTextMessage(facebook_id, "wasn't handled")
-
+        
+    db.session.delete(event)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
     return ''
 
 
@@ -472,6 +477,15 @@ def receivedPostback(event):
         if 'payload' in parsed:
             if parsed['payload'] == 'WALK':
                 drive_id = parsed['drive_id']
+                event = Event.query.get(drive_id)
+                if event is None:
+                    return
+                db.session.delete(drive_id)
+                try:
+                    db.session.commit()
+                except IntegrityError:
+                    db.session.rollback()
+
                 #Get scheduled async, remove it
         print parsed['address']
         print parsed['title']
