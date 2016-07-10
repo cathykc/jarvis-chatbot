@@ -253,7 +253,8 @@ def receivedMessage(event):
                 "1 Hacker Way",
                 google_cal.today_at(19, 0)
             )
-        elif 'remind me to' in text:
+        elif 'remind' in text:
+            print 'IN REMINDER ELIF!!!'
             user = User.query.get(facebook_id)
             task = text.replace('remind me to ', '')
             user.reminders += '$'+task
