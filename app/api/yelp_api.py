@@ -71,7 +71,7 @@ def get_top_locations_swarm(type, number, location):
 
         buttons = [{"type": "web_url", "title" : 'View ',
                     "payload"
-                    : {}]
+                    : {}}]
         message["buttons"] = buttons
         locations.append(message)
     return locations
