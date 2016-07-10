@@ -1,8 +1,9 @@
-from flask import Flask, request, render_template, session
-from api import google_cal, yelp_api, lyft
 from database import db
 from models import User
 import app
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, render_template, session, url_for
+from api import google_cal, yelp_api, lyft, nyt_api, triggers
 import json
 import requests
 import os
@@ -107,16 +108,11 @@ def message_test(senderID=None, message=""):
 # *****************************************************************************
 @app.route("/lyft_trigger")
 def lyft_trigger():
-
     recipientId = request.args.get('recipientId')
-    buttonsList = [{
-        "type" : "web_url",
-        "url" : "http://jarvis-chatbot.herokuapp.com/lyft_deeplink",
-        "title" : "Get a Lyft to Work"
-    }]
-    sendButtonMessage(recipientId, 'Need a ride to work?', buttonsList)
 
-    return "Sent Message"
+    triggers.send_lyft_cta(recipientId)    
+
+    return ""
 
 
 # *****************************************************************************
