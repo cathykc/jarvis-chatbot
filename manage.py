@@ -72,8 +72,8 @@ def dashboard(facebook_id=None):
 def foursquare_push():
     checkin_obj = request.form.get('checkin')
 
-    venue_name = checkin_obj['venue']['name']
-    venue_city = checkin_obj['venue']['city']
+    # venue_name = checkin_obj['venue']['name']
+    # venue_city = checkin_obj['venue']['city']
 
     # Schedule a notification for ice cream in 1 hour
     food_type = 'Ice Cream'
