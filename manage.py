@@ -298,6 +298,7 @@ def receivedMessage(event):
             times = ""
             for r in response:
                 times += str(r[0]) + " to " + str(r[1])
+            print times
             sendTextMessage(facebook_id, times)
 
         elif 'test distance please' in text:
