@@ -407,8 +407,11 @@ def receivedPostback(event):
             end_time = google_cal.minutes_later(time, 30).isoformat()
         else:
             time = parsed['time']
+            print "IN PAYLOAD"
             print time
-            end_time = google_cal.minutes_later(time, 60).isoformat()
+            d = datetime.strptime( "2007-03-04T21:08:12", "%Y-%m-%dT%H:%M:%S" )
+            print d
+            end_time = google_cal.minutes_later(d, 60).isoformat()
             print end_time
             print parsed['summary']
         if parsed['person'] is None:
