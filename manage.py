@@ -101,13 +101,13 @@ def lyft_request_ride(facebook_id):
 def lyft_auth():
     facebook_id = request.args.get('state')
     if facebook_id == None:
-        return "Click in through Messenger"
+        return render_template('login.html')
     return lyft.setup(request, facebook_id)
 
 @app.route("/google_auth/<facebook_id>")
 def google_auth(facebook_id=None):
     if facebook_id == None:
-        return "Click in through Messenger"
+        return render_template('login.html')
     session['facebook_id'] = facebook_id
     return google_cal.oauth(facebook_id)
 
@@ -115,7 +115,7 @@ def google_auth(facebook_id=None):
 def google_oauth2callback():
     facebook_id = session['facebook_id']
     if facebook_id == None:
-        return "Click in through Messenger"
+        return render_template('login.html')
     return google_cal.oauth2callback(facebook_id)
 
 @app.route("/fitbit_auth")
