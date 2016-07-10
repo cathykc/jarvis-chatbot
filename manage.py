@@ -569,11 +569,11 @@ def sendWalkingMessage(facebook_id, metadata):
     }
     buttonList = [{
             'type': "postback",
-            'title': "Thanks Jarvis, I'll walk!",
+            'title': "I'll walk!",
             'payload': json.dumps(payload)
         }, {
             'type': "postback",
-            'title': "I'm going to take the car instead.",
+            'title': "I'll drive.",
             'payload': "noop"
         }
     ]
@@ -590,7 +590,7 @@ def sendDrivingMessage(facebook_id, metadata):
             'payload': "CALL_LYFT HOME"
         }, {
             'type': "postback",
-            'title': "I'm going to take the car instead.",
+            'title': "I'll drive.",
             'payload': "noop"
         }
     ]
