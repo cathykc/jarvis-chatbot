@@ -111,7 +111,6 @@ def lyft_trigger():
     facebook_id = request.args.get('facebook_id')
 
     triggers.send_lyft_cta(facebook_id)    
-
     return ""
 
 
