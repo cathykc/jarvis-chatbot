@@ -27,6 +27,7 @@ def get_top_locations(type, number, location, time, who):
         # name = business.name
         # locations[name] = business.location.display_address
         payload = {}
+        payload['summary'] = type
         payload['title'] = business.name
         payload['address'] = business.location.display_address
         payload['time'] = time
