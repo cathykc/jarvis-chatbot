@@ -78,3 +78,23 @@ def get_events_today(facebook_id):
         output.append(event['summary'])
     return ", ".join(output)
     
+# summary: String, location: String, start_time: datetime string, emails: [String]
+def create_event(summary, location, start_time, end_time, emails):
+    attendees = []
+    for email in emails:
+        attendees.append({
+            'email': email
+        })
+    event = {
+        'summary': summary,
+        'location': location,
+        'start': {
+            'dateTime': start_time
+        },
+        'end': {
+            'dateTime': end_time
+        },
+        'attendees': attendees
+    }
+
+    created_event = service.events().insert(calendarId='primary', body=event).execute()
