@@ -409,7 +409,7 @@ def receivedPostback(event):
             time = parsed['time']
             print "IN PAYLOAD"
             print time
-            d = datetime.strptime( "2007-03-04T21:08:12", "%Y-%m-%dT%H:%M:%S" )
+            d = datetime.strptime(time, "%Y-%m-%dT%H:%M:%S")
             print d
             end_time = google_cal.minutes_later(d, 60).isoformat()
             print end_time
