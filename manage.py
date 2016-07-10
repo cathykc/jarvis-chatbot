@@ -385,6 +385,9 @@ def receivedPostback(event):
     facebook_id = event['sender']['id']
     payload = event['postback']['payload']
 
+    if payload is None or payload == "":
+        return
+
     if payload == "GET_STARTED":
         r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
         
@@ -416,6 +419,10 @@ def receivedPostback(event):
     else:
         print payload
         parsed = json.loads(payload)
+        if 'payload' in parsed:
+            if parsed['payload'] == 'WALK':
+                drive_id = parsed['drive_id']
+                #Get scheduled async, remove it
         print parsed['address']
         print parsed['title']
         if parsed['time'] is None:
@@ -443,6 +450,50 @@ def receivedPostback(event):
 # MESSAGE CREATION FUNCTION DUMP
 # *****************************************************************************
 
+def sendWalkingMessage(facebook_id, metadata):
+    payload = {
+        payload: "WALK",
+        drive_id: metadata['drive_id']
+    }
+    buttonList = [{
+            type: "postback",
+            title: "Thanks Jarvis, I'll walk!",
+            payload: json.dumps(payload)
+        }, {
+            type: "postback",
+            title: "I'm going to take the car instead.",
+            payload: ""
+        }
+    ]
+    sendButtonMessage(
+        facebook_id,
+        metadata['summary'] + " is starting soon - you should start walking now!",
+        buttonList
+    )
+
+def sendDrivingMessage(facebook_id, metadata):
+    payload = {
+        payload: "WALK",
+        drive_id: metadata['drive_id']
+    }
+    buttonList = [{
+            type: "postback",
+            title: "Call me a Lyft",
+            payload: "CALL_LYFT HOME"
+        }, {
+            type: "postback",
+            title: "I'm going to take the car instead.",
+            payload: ""
+        }
+    ]
+    
+    sendButtonMessage(
+        facebook_id,
+        metadata['summary'] + " is starting soon - you should call a Lyft!",
+        buttonList
+    )
+
+
 def sendMorningCard(facebook_id):
     sendWeather(facebook_id)
     sendEventDigest(facebook_id)
@@ -455,9 +506,13 @@ def sendWeather(facebook_id):
 
 def sendEventDigest(facebook_id):
     events = google_cal.get_events_today(facebook_id)
+    # also schedules all the async messages
     events_formatted = []
     for event in events:
         events_formatted.append(event["start_time"] + ": " + event["title"])
+        #scheduleWalkingEvent(event)
+        #scheduleDrivingEvent(event)
+
 
     busy = am_i_busy(len(events))
     sendTextMessage(facebook_id, busy + "Here's what you're doing today:\n\n"+
