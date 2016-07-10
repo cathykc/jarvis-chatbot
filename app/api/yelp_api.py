@@ -1,5 +1,6 @@
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
+import json
 
 auth = Oauth1Authenticator(
     consumer_key='ymPqst4K4Monsi6pKrKRIw',
@@ -12,7 +13,7 @@ client = Client(auth)
 
 
 # prints the number of relevant results in that location
-def get_top_locations(type, number, location):
+def get_top_locations(type, number, location, time, who):
     locations = []
     params = {
         'term': type,
@@ -25,6 +26,17 @@ def get_top_locations(type, number, location):
         # print "hello business"
         # name = business.name
         # locations[name] = business.location.display_address
+        payload = {}
+        payload['title'] = business.name
+        payload['address'] = business.location.display_address
+        payload['time'] = time
+        payload['person'] = who
+        json_payload = json.dumps(payload)
+        #count = 0
+        #for person in who:
+        #    payload['person' + count] = who[count]
+        #    count += 1
+
         message = {}
         message["title"] = business.name
         message["subtitle"] = business.snippet_text
@@ -33,7 +45,7 @@ def get_top_locations(type, number, location):
 
         buttons = [{"type": "postback", "title" : "Choose this location",
                     "payload"
-                    : "payload for yelp homies"}]
+                    : json_payload}]
         message["buttons"] = buttons
         locations.append(message)
     return locations
