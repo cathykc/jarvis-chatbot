@@ -298,6 +298,9 @@ def receivedMessage(event):
         elif 'hey jarvis' in text:
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
+        elif 'who am i' in text:
+            sendTextMessage(facebook_id, "You are " + first_name + "!")
+
         elif 'knock knock' in text:
             sendTextMessage(facebook_id, "Who's there?! I'm Jarvis!")
 
@@ -307,7 +310,10 @@ def receivedMessage(event):
         elif 'fuck' in text or 'shit' in text or 'damn' in text:
             sendTextMessage(facebook_id, "Watch your language!")
 
-        elif 'what is your name' in text or 'who are you' in text:
+        elif 'what is your name' in text or 'who are you' in text or 'whats ' \
+                                                                     'your ' \
+                                                                     'name' \
+                in text:
             sendTextMessage(facebook_id, "My name is Jarvis!")
 
         else:
