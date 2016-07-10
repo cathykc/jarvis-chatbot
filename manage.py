@@ -279,7 +279,7 @@ def receivedMessage(event):
         elif 'fuck' in text or 'shit' in text or 'damn' in text:
             sendTextMessage(facebook_id, "Watch your language!")
 
-        elif 'hey' in text or 'hi' in text:
+        elif 'hey' in text or text == 'hi':
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
 
         elif 'how are you' in text or 'how are you' in text or 'how\'re you' \
@@ -330,6 +330,13 @@ def receivedMessage(event):
             time = parse_query.getTime(text)
             if time is None:
                 parsed_time = None
+            elif "am" in time or "pm" in time:
+                just_num = str[:2]
+                if 'am' in time:
+                    num_time = int(just_num)
+                else:
+                    num_time = int(just_num) + 12
+                parsed_time = google_cal.today_at(num_time, 0).isoformat()
             else:
                 num_time = int(time)
                 parsed_time = google_cal.today_at(num_time, 0).isoformat()
