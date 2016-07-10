@@ -261,7 +261,10 @@ def receivedMessage(event):
             print('2')
             print(user.reminders)
             print(task)
-            user.reminders = user.reminders + '$'+task
+            if user.reminders is None:
+                user.reminders = task
+            else:
+                user.reminders = user.reminders + '$'+task
             print('3')
             db.session.add(user)
             try:
