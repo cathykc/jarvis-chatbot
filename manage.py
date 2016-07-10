@@ -536,7 +536,7 @@ def sendDrivingMessage(facebook_id, metadata):
 
 def sendMorningCard(facebook_id):
     sendWeather(facebook_id)
-    sendImage(facebook_id, "http://static1.squarespace.com/static/547f29bfe4b0dc192ed7bdac/54aeb15ce4b018c14f34c7cb/54aeb160e4b018c14f34c7ed/1420734817363/san-franc.jpg?format=2500w")
+    sendImageMessage(facebook_id, "http://static1.squarespace.com/static/547f29bfe4b0dc192ed7bdac/54aeb15ce4b018c14f34c7cb/54aeb160e4b018c14f34c7ed/1420734817363/san-franc.jpg?format=2500w")
     sendEventDigest(facebook_id)
 
 def sendWeather(facebook_id):
