@@ -297,8 +297,12 @@ def receivedMessage(event):
             else:
                 sendTextMessage(facebook_id, "I got you a Lyft home, it'll be here in a few minutes")
 
-        elif 'hey jarvis' in text:
+        elif 'hey jarvis' in text or 'hey' in text or 'hi' in text:
             sendTextMessage(facebook_id, "Hey, " + first_name + "!")
+
+        elif "what's up" in text or "whats up" in text:
+            sendTextMessage(facebook_id, "Not much! Hope you're having a "
+                                         "good day, "+first_name + "!")
 
         elif 'who am i' in text or 'whats my name' in text or "what's my " \
                                                               "name" in text:
