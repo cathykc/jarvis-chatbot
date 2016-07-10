@@ -86,7 +86,9 @@ def get_events_today(facebook_id):
             start = event['start'].get('dateTime', event['start'].get('date'))
             print start, event['summary']
 
-            eventObj = {"start_time":start, "title":event["summary"]}
+            start = datetime.strptime(start.split("T")[1].split("-")[0], "%H:%M:%S")
+
+            eventObj = {"start_time":start.strftime("%I:%M %p"), "title":event["summary"]}
             output.append(eventObj)
     return output
     
