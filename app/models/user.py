@@ -19,7 +19,9 @@ class User(db.Model):
     lyft_go_to_work_time = db.Column(db.DateTime)
 
     reminders = db.Column(db.String)
-    
+
+    foursquare_access_token = db.Column(db.String)
+
 
     def __init__(self, facebook_id):
         self.facebook_id = facebook_id
