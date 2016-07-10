@@ -36,7 +36,7 @@ def setup(request, facebook_id):
             work_long, facebook_id)
 
     # Redirect to dashboard
-    redirect_url = "/" + session['fbid']
+    redirect_url = "/" + facebook_id
     return redirect(redirect_url)
 
     # return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"

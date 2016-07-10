@@ -2,7 +2,7 @@ from database import db
 from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api
+from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare
 import json
 import requests
 import os
@@ -103,6 +103,12 @@ def lyft_auth():
     if facebook_id == None:
         return render_template('login.html')
     return lyft.setup(request, facebook_id)
+
+@app.route("/foursquare_redirect/<facebook_id>")
+def foursquare_auth(facebook_id=None):
+    if facebook_id == None:
+        return render_template('login.html')
+    return foursquare.setup(request, facebook_id)
 
 @app.route("/google_auth/<facebook_id>")
 def google_auth(facebook_id=None):
