@@ -427,6 +427,8 @@ def receivedPostback(event):
             print 'AFTERNOON REMINDERS'
             # Prep reminders
             reminders_string = ''
+            print 'reminders_string'
+            print reminders_string
 
             reminders = User.query.get(facebook_id).reminders
             if reminders is not None:
