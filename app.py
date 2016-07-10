@@ -18,21 +18,21 @@ app.secret_key = str(uuid.uuid4())
 # *****************************************************************************
 
 @app.route("/")
-@app.route("/<senderID>")
-def dashboard(senderID=None):
-    if senderID == None:
+@app.route("/<facebook_id>")
+def dashboard(facebook_id=None):
+    if facebook_id == None:
         return render_template('login.html')
-    session['fbid'] = senderID
-    user = User.query.get(senderID)
+    session['fbid'] = facebook_id
+    user = User.query.get(facebook_id)
     if not user:
-        user = User(facebook_id=senderID) 
+        user = User(facebook_id=facebook_id) 
         db.session.add(user)
         print user, "new user added"
         try:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-    return render_template('dashboard.html', senderID=senderID)
+    return render_template('dashboard.html', facebook_id=facebook_id)
 
 @app.route("/lyft_deeplink")
 def lyft_deeplink():
@@ -75,11 +75,11 @@ def lyft_auth():
 
     return "We think your home address is: <b>" + home_address + "</b> and your work address is <br>" + work_address + "</b>"
 
-@app.route("/google_auth/<senderID>")
-def google_auth(senderID=None):
-    if senderID == None:
+@app.route("/google_auth/<facebook_id>")
+def google_auth(facebook_id=None):
+    if facebook_id == None:
         return "Click in through Messenger"
-    return google_cal.oauth(senderID)
+    return google_cal.oauth(facebook_id)
 
 @app.route("/google_oauth2callback")
 def google_oauth2callback():
@@ -93,12 +93,12 @@ def fitbit_auth():
     return "FITBIT AUTH"
 
 # simulates a text message event
-@app.route("/message_test/<senderID>/<message>")
-def message_test(senderID=None, message=""):
+@app.route("/message_test/<facebook_id>/<message>")
+def message_test(facebook_id=None, message=""):
     event = {}
     event['sender'] = {}
     event['message'] = {}
-    event['sender']['id'] = senderID
+    event['sender']['id'] = facebook_id
     event['message']['text'] = message
     receivedMessage(event)
     return "Check your server logs"
@@ -108,9 +108,9 @@ def message_test(senderID=None, message=""):
 # *****************************************************************************
 @app.route("/lyft_trigger")
 def lyft_trigger():
-    recipientId = request.args.get('recipientId')
+    facebook_id = request.args.get('facebook_id')
 
-    triggers.send_lyft_cta(recipientId)    
+    triggers.send_lyft_cta(facebook_id)    
 
     return ""
 
@@ -170,21 +170,21 @@ def webhook():
 # *****************************************************************************
 
 def receivedMessage(event):
-    senderID = event['sender']['id']
+    facebook_id = event['sender']['id']
     message = event['message']
 
-    print senderID
+    print facebook_id
     print message
 
     if 'text' in message:
-        # sendTextMessage(senderID, "Text received.")
+        # sendTextMessage(facebook_id, "Text received.")
         text = message["text"]
 
         if 'ping' in text:
-             sendTextMessage(senderID, "pong")
+             sendTextMessage(facebook_id, "pong")
 
         elif "my events" in text:
-            sendTextMessage(senderID, google_cal.get_events_today(senderID))
+            sendTextMessage(facebook_id, google_cal.get_events_today(facebook_id))
 
         # Schedule coffee in Mission with Mom
         elif 'schedule' in text:
@@ -192,21 +192,21 @@ def receivedMessage(event):
             location = split[3]
             food_type = split[1]
             response = yelp_api.get_top_locations(food_type, 3, location)
-            sendTextMessage(senderID, "Here are the best places to get " +
+            sendTextMessage(facebook_id, "Here are the best places to get " +
                             food_type + " in " + location + ":  ")
-            sendCarouselMessage(senderID, response)
+            sendCarouselMessage(facebook_id, response)
 
         # nyt
         elif 'nyt' in text:
             response = nyt_api.get_top_articles()
-            sendTextMessage(senderID, "Here are the most popular articles "
+            sendTextMessage(facebook_id, "Here are the most popular articles "
                                       "today: ")
-            sendCarouselMessage(senderID, response)
+            sendCarouselMessage(facebook_id, response)
         else:
-            sendTextMessage(senderID, "catch all response")
+            sendTextMessage(facebook_id, "catch all response")
 
     elif 'attachments' in message:
-        sendTextMessage(senderID, "Attachment received.")
+        sendTextMessage(facebook_id, "Attachment received.")
 
 # Pass in the message string and then arrays of text choices
 # e.g. matchType("schedule event", ["schedule", "plan"], ["event", "something"])
@@ -225,13 +225,13 @@ def matchType(text, *and_args):
 
 
 def receivedPostback(event):
-    senderID = event['sender']['id']
+    facebook_id = event['sender']['id']
     payload = event['postback']['payload']
 
     if payload == "GET_STARTED":
-        r = requests.get("https://graph.facebook.com/v2.6/" + str(senderID) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
+        r = requests.get("https://graph.facebook.com/v2.6/" + str(facebook_id) + "?fields=first_name&access_token=" + PAGE_ACCESS_TOKEN)
         
-        dashboard_url = "http://jarvis-chatbot.herokuapp.com/" + senderID
+        dashboard_url = "http://jarvis-chatbot.herokuapp.com/" + facebook_id
 
         element = {"title": "Hi" + r.json()["first_name"] + "! Set me up by visiting the Jarvis Dashboard."}
         element["subtitle"] = "I'm here to help you throughout your day."
@@ -239,9 +239,9 @@ def receivedPostback(event):
         element["image_url"] = "https://i.ytimg.com/vi/nFi6e6Rs2so/maxresdefault.jpg"
         element["buttons"] = [{"type": "web_url", "url": dashboard_url, "title": "Set Up Accounts"}]
 
-        sendCarouselMessage(senderID, [element])
+        sendCarouselMessage(facebook_id, [element])
     else:   
-        sendTextMessage(senderID, "Postback called.")
+        sendTextMessage(facebook_id, "Postback called.")
 
 
 # *****************************************************************************
@@ -249,9 +249,9 @@ def receivedPostback(event):
 # *****************************************************************************
 
 # Send a text mesage.
-def sendTextMessage(recipientId, messageText):
+def sendTextMessage(facebook_id, messageText):
 
-    messageData = {'recipient': {'id': recipientId}}
+    messageData = {'recipient': {'id': facebook_id}}
     messageData['message'] = {'text': messageText}
 
     print messageText
@@ -259,8 +259,8 @@ def sendTextMessage(recipientId, messageText):
 
 
 # Send an image message.
-def sendImageMessage(recipientId, imageUrl):
-    messageData = {'recipient': {'id': recipientId}}
+def sendImageMessage(facebook_id, imageUrl):
+    messageData = {'recipient': {'id': facebook_id}}
 
     attachment = {'type': "image"}
     attachment['payload'] = {'url': imageUrl}
@@ -280,8 +280,8 @@ def sendImageMessage(recipientId, imageUrl):
 #     title: "Call Postback",
 #     payload: "Developer defined postback"
 # }]
-def sendButtonMessage(recipientId, messageText, buttonList):
-    messageData = {"recipient": {"id": recipientId}}
+def sendButtonMessage(facebook_id, messageText, buttonList):
+    messageData = {"recipient": {"id": facebook_id}}
 
     attachment = {"type": "template"}
     attachment["payload"] = {"template_type":"button",
@@ -325,8 +325,8 @@ def sendButtonMessage(recipientId, messageText, buttonList):
 # }]
 
 # elementList is a list of JSON objects
-def sendCarouselMessage(recipientId, elementList):
-    messageData = {'recipient': {'id': recipientId}}
+def sendCarouselMessage(facebook_id, elementList):
+    messageData = {'recipient': {'id': facebook_id}}
 
     attachment = {'type': "template"}
     attachment['payload'] = {'template_type': "generic",

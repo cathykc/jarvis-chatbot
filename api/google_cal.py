@@ -9,10 +9,10 @@ from oauth2client import client
 from database import db
 from models import User
 
-def oauth(senderID):
-    flask.session['facebook_id'] = senderID 
+def oauth(facebook_id):
+    flask.session['facebook_id'] = facebook_id 
     # Getting credentials from flask.session
-    user = User.query.get(senderID)
+    user = User.query.get(facebook_id)
     if not user:
         return "User not found"
     print "google credentials", user.google_credentials
@@ -26,7 +26,7 @@ def oauth(senderID):
         # Already oauthed.
         return "Already oauthed"
 
-def oauth2callback(senderID):
+def oauth2callback(facebook_id):
     flow = client.flow_from_clientsecrets(
         'google_client_secrets.json',
         scope='https://www.googleapis.com/auth/calendar',
@@ -38,7 +38,7 @@ def oauth2callback(senderID):
         auth_code = flask.request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
         # Storing credentials in flask.session
-        user = User.query.get(senderID)
+        user = User.query.get(facebook_id)
         if not user:
             return "User not found"
         user.google_credentials = json.dumps(credentials.to_json())
@@ -48,10 +48,10 @@ def oauth2callback(senderID):
         except IntegrityError:
             db.session.rollback()
         #flask.session['google_credentials'] = credentials.to_json()
-        return flask.redirect(flask.url_for('dashboard', senderID=senderID))
+        return flask.redirect(flask.url_for('dashboard', facebook_id=facebook_id))
 
-def get_events_today(senderID):
-    user = User.query.get(senderID)
+def get_events_today(facebook_id):
+    user = User.query.get(facebook_id)
     if not user or not user.google_credentials:
         return "Permission denied. Please OAuth for Google Calendar."
     credentials = client.OAuth2Credentials.from_json(json.loads(user.google_credentials))
