@@ -273,7 +273,8 @@ def receivedMessage(event):
 
         if 'ping' in text:
             sendTextMessage(facebook_id, "pong")
-
+        elif 'hello' in text:
+            sendTextMessage(facebook_id, "hello, world!")
         elif 'morning card' in text:
             sendMorningCard(facebook_id)
 
