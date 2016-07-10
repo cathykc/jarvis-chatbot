@@ -68,7 +68,7 @@ def dashboard(facebook_id=None):
     return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag, google_cal_connected_flag=google_cal_connected_flag,foursquare_connected_flag=foursquare_connected_flag)
 
 # Foursquare webhook 
-@app.route("/foursquare_push")
+@app.route("/foursquare_push", methods=['GET','POST'])
 def foursquare_push():
     checkin_obj = request.args.get('checkin')
     print(checkin_obj)
