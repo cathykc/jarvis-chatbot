@@ -18,9 +18,9 @@ def get_top_articles(num):
         article["item_url"] = r.json()['results'][i]['url']
         article["image_url"] = image_url
 
-        buttons = [{"type": "postback", "title" : "",
-                    "payload"
-                    : "nyt"}]
+        buttons = [{"type": "web_url", "url" : article["item_url"],
+                    "title"
+                    : "Read Here"}]
         article["buttons"] = buttons
         articles.append(article)
     return articles
