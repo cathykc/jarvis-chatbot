@@ -484,7 +484,7 @@ def receivedPostback(event):
             emails = []
         print 'ALMOST THERE'
         google_cal.create_event(facebook_id, parsed['summary'],
-                                parsed['address'], time, end_time, emails)
+                                parsed['address'], d, end_time, emails)
         sendTextMessage(facebook_id, "Putting this event into your calendar!")
 
 # *****************************************************************************
