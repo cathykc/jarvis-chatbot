@@ -247,7 +247,12 @@ def receivedMessage(event):
             sendTextMessage(facebook_id, "Good morning {}! Today in {} it is {} with a temperature of {}.".format(first_name, weather["city"], weather["weather"], weather["temperature"]))
 
         elif "my events" in text:
-            sendTextMessage(facebook_id, google_cal.get_events_today(facebook_id))
+            events = google_cal.get_events_today(facebook_id)
+            events_formatted = []
+            for event in events:
+                events_formatted.append(event["start_time"] + ": " + event["title"])
+
+            sendTextMessage(facebook_id, "\n".join(events_formatted))
 
         elif "event right now" in text:
             google_cal.create_event(
