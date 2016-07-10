@@ -4,7 +4,6 @@ import app
 from flask import Flask, request, render_template, session, url_for
 from app.api import google_cal, yelp_api, lyft, nyt_api, triggers
 import json
-from datetime import datetime, timedelta
 import requests
 import os
 import uuid
