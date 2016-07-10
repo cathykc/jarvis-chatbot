@@ -340,6 +340,15 @@ def receivedMessage(event):
                 else:
                     num_time = int(just_num) + 12
                 parsed_time = google_cal.today_at(num_time, 0).isoformat()
+            elif "a.m." in time or "p.m." in time:
+                just_num = time[:-4]
+                just_num.strip()
+                print just_num
+                if 'a.m.' in time:
+                    num_time = int(just_num)
+                else:
+                    num_time = int(just_num) + 12
+                parsed_time = google_cal.today_at(num_time, 0).isoformat()
             else:
                 num_time = int(time)
                 parsed_time = google_cal.today_at(num_time, 0).isoformat()
