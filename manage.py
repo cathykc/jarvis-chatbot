@@ -27,6 +27,9 @@ manager.add_command('db', MigrateCommand)
 @app.route("/")
 @app.route("/<facebook_id>")
 def dashboard(facebook_id=None):
+    # I have never done something so hacky in my life @cathy
+    if facebook_id == 'favicon.ico':
+        return ""
     if facebook_id == None:
         return render_template('login.html')
     session['fbid'] = facebook_id
