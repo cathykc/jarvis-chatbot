@@ -2,7 +2,7 @@ from database import db
 from app.models import User
 import app
 from flask import Flask, request, render_template, session, url_for
-from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare
+from app.api import google_cal, yelp_api, lyft, nyt_api, weather_api, foursquare, google_maps
 import json
 import requests
 import os
@@ -233,6 +233,13 @@ def receivedMessage(event):
 
         elif 'weather' in text:
             sendWeather(facebook_id)
+
+        if 'test distance please' in text:
+            google_maps.walking_time_from_home(
+                facebook_id,
+                "1 Hacker Way",
+                google_cal.today_at(19, 0)
+            )
 
         elif 'fuck' in text or 'shit' in text or 'damn' in text:
             sendTextMessage(facebook_id, "Watch your language!")
