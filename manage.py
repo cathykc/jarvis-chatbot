@@ -57,7 +57,21 @@ def dashboard(facebook_id=None):
     if user.google_credentials is not None:
         google_cal_connected_flag = True
 
-    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag, google_cal_connected_flag=google_cal_connected_flag)
+    # Check if foursquare is connected
+    foursquare_connected_flag = False
+    if user.foursquare_access_token is not None:
+        print 'foursquare connected'
+        foursquare_connected_flag = True
+    else:
+        print 'foursquare NOT connected'
+
+    return render_template('dashboard.html', facebook_id=facebook_id, lyft_connected_flag=lyft_connected_flag, google_cal_connected_flag=google_cal_connected_flag,foursquare_connected_flag=foursquare_connected_flag)
+
+# Foursquare webhook 
+@app.route("/foursquare_push")
+def foursquare_push():
+    checkin_obj = request.args.get('checkin')
+    print(checkin_obj)
 
 @app.route("/scheduler/<facebook_id>")
 def scheduler(facebook_id=None):

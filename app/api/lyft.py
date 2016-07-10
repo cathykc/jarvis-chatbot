@@ -65,7 +65,7 @@ def schedule_morning_info_card(go_to_work_time, facebook_id):
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return false
+        return False
     return True
 
 def schedule_morning_lyft(go_to_work_time, facebook_id):
@@ -84,7 +84,7 @@ def schedule_morning_lyft(go_to_work_time, facebook_id):
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return false
+        return False
     return True
 
 def schedule_afternoon_lyft(go_home_time, facebook_id):
@@ -103,7 +103,7 @@ def schedule_afternoon_lyft(go_home_time, facebook_id):
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return false
+        return False
     return True    
 
 # Store signal retrieved into database
@@ -149,7 +149,7 @@ def store_signal_in_database(access_token,
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return false
+        return False
     return True
 
 # Returns (access token, refresh token)

@@ -78,7 +78,7 @@
 			</div>
 			<div class="col-4">
 				<a href="https://foursquare.com/oauth2/authenticate?client_id=MEZC4SKNQBXGVTMXMW0IKILIW1RQ4CAZ5AOQROEB5JGLGGD0&response_type=code&redirect_uri=http://127.0.0.1:5000/foursquare_redirect/{{ facebook_id }}">
-					{% if foursquare_connected %}
+					{% if foursquare_connected_flag %}
 					<div class="auth_card authorized" id="foursquare_card"></div>
 					<div class="check"></div>
 					{% else %}
