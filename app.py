@@ -1,17 +1,24 @@
 from database import db
 from models import User
 import app
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, render_template, session, url_for
 from api import google_cal, yelp_api, lyft, nyt_api, triggers
 import json
 import requests
 import os
 import uuid
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db.init_app(app)
 app.secret_key = str(uuid.uuid4())
+
+migrate = Migrate(app, db)
+manager = Manager(app)
+
+manager.add_command('db', MigrateCommand)
 
 # *****************************************************************************
 # WEBAPP ROUTES
@@ -111,7 +118,6 @@ def lyft_trigger():
     facebook_id = request.args.get('facebook_id')
 
     triggers.send_lyft_cta(facebook_id)    
-
     return ""
 
 
@@ -349,8 +355,16 @@ def callSendAPI(messageData):
     else:
         print "Unable to send message."
 
+def setup_db():
+    with app.app_context():
+        print app
+        db.drop_all()
+        db.create_all()
+        db.session.commit()
+    print "database is set up!"
+
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run()
+    manager.run()

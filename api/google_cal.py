@@ -61,7 +61,7 @@ def get_events_today(facebook_id):
     now = datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     today = datetime.today()
     start_of_today = datetime(today.year, today.month, today.day)
-    end_of_today = start_of_today + timedelta(1, 8) # Timezone difference
+    end_of_today = start_of_today + timedelta(days=1, hours=8) # Timezone difference
     print end_of_today
     end_of_today_iso = end_of_today.isoformat() + 'Z'
     print 'Getting the upcoming events for today'
