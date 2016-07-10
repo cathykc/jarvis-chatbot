@@ -101,7 +101,7 @@ def get_events_today(facebook_id):
             end = datetime.strptime(end.split("T")[1].split("-")[0], "%H:%M:%S")
 
             eventObj = {
-                "location": event['location']
+                "location": event['location'],
                 "start_time": start.strftime("%I:%M %p"), 
                 "end_time": end.strftime("%I:%M %p"),
                 "title": event["summary"]
