@@ -73,6 +73,9 @@ def foursquare_push():
     print('FOURSQURE PUSH!!!')
     checkin_obj = request.args.get('checkin')
     print(checkin_obj)
+    print(request.args)
+    print('hello')
+    print(request)
 
     data = json.loads(request.data)
     print(data)
