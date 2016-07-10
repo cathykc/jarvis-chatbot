@@ -501,8 +501,9 @@ def receivedPostback(event):
             print "IN PAYLOAD"
             print time
             d = datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%f")
-            print d
             end_time = google_cal.minutes_later(d, 60).isoformat()
+            start_to_cal = str(d)
+            print start_to_cal
             print end_time
             print parsed['summary']
         if parsed['person'] is None:
@@ -511,7 +512,7 @@ def receivedPostback(event):
             emails = []
         print 'ALMOST THERE'
         google_cal.create_event(facebook_id, parsed['summary'],
-                                parsed['address'], d, end_time, emails)
+                                parsed['address'], start_to_cal, end_time, emails)
         sendTextMessage(facebook_id, "Putting this event into your calendar!")
 
 # *****************************************************************************
