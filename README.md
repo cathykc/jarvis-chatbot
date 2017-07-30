@@ -1,29 +1,29 @@
 Jarvis Predictive Personal Assistant
 =========
 
-###3rd Place at Greylock Hackfest.
+### 3rd Place at Greylock Hackfest.
 
 Jarvis is a Messenger chatbot that pulls in information from various API's (The New York Times, Yelp, Lyft, Swarm, Google Calendar, Maps) in order to make predictive decisions to empower your routines. He surfaces the information you want, when you want it. By bridging data from different sources, Jarvis can eliminate all friction in juggling these apps throughout your daily routine.
 
-##Features
+## Features
 ![](/gifs/starter.gif)
 
-###Jarvis knows when you wake up.
+### Jarvis knows when you wake up.
 ![](/gifs/morning_card.gif)
 
-###Jarvis knows when you need to go to work.
+### Jarvis knows when you need to go to work.
 ![](/gifs/lyft_work.gif)
 
-###Jarvis can schedule events for you.
+### Jarvis can schedule events for you.
 ![](/gifs/schedule_event.gif)
 
-###Jarvis gives you recommendations based on what you're doing.
+### Jarvis gives you recommendations based on what you're doing.
 ![](/gifs/swarm.gif)
 
-###Jarvis reminds you to do things at the right time.
+### Jarvis reminds you to do things at the right time.
 ![](/gifs/lyft_home.gif)
 
-##Team
+## Team
 Cathy Chen
 
 Elizabeth Hamp
@@ -32,7 +32,7 @@ Daniel Zhang
 
 Ben Hsu
 
-##Pitch
+## Pitch
 As companies like Lyft, Fitbit, Foursquare, Google etc. are becoming increasingly popular, the amount of information about us that is stored online has grown rapidly. Between all these companies it's possible to get an extremely detailed view of someone's life. 
 
 When do they go to work? Where do they live? How often do they exercise? What do they like to eat?
